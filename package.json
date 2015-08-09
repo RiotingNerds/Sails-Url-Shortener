@@ -33,5 +33,9 @@
     "url": "git://github.com/chrissim/URLShortener.git"
   },
   "author": "chrissim",
-  "license": ""
+  "license": "",
+  "devDependencies": {
+    "grunt-browserify": "^4.0.0",
+    "grunt-react": "^0.12.2"
+  }
 }
