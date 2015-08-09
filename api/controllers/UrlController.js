@@ -5,12 +5,10 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+var _ = require('lodash'),
+		response = require('../helpers/Response')
+
 module.exports = {
-
-	_config: {
-			rest:false
-		},
-
   create: function(req,res) {
 		var params = req.body
 		Domain.findOne({id:params.domainID}).exec(function(err,result) {
@@ -19,6 +17,17 @@ module.exports = {
 				return res.json(result)
 			})
 		})
-
+	},
+	checkHash: function(req,res) {
+		var hash = req.param('hash','')
+		if(_.isEmpty(hash)) {
+			return response.validationError(res,"No hash provided")
+		}
+		Url.findOne({hash:hash}, function(err, result) {
+			if(result || err) {
+				return response.validationError(res,"Hash already exists")
+			}
+			return response.success(res,"Hash can be use")
+		})
 	}
 };

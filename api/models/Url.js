@@ -11,10 +11,9 @@ module.exports = {
     domainID : { type: 'integer' },
     redirectURL: { type: 'text' },
     fullURL: {type: 'string'},
-    parameter: {type:'string'},
+    hash: {type:'string'},
     lastRequested: {type: 'datetime'},
     activeDate: {type: 'datetime'},
-    active: {type: 'boolean'},
-
+    active: {type: 'boolean'}
   }
 };
