@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 				// 'relative/path/from/gruntfile/to/compiled/template/destination'  : ['relative/path/to/sourcefiles/**/*.html']
 				// cwd: 'assets/js/',
 
-				'.tmp/public/js/script.js': ['assets/js/**/*.js','assets/js/**/*.jsx','!assets/js/dependencies/*.js','!assets/js/bootstrap.min.js']
+				'.tmp/public/js/script.js': ['assets/js/**/*.js','assets/js/**/*.jsx','!assets/js/library/*.js','!assets/js/dependencies/*.js','!assets/js/bootstrap.min.js']
 			},
 			options: {
 				transform:  [ require('grunt-react').browserify ]

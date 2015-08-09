@@ -36,6 +36,7 @@
   "license": "",
   "devDependencies": {
     "grunt-browserify": "^4.0.0",
-    "grunt-react": "^0.12.2"
+    "grunt-react": "^0.12.2",
+    "jquery.scrollto": "^2.1.1"
   }
 }
