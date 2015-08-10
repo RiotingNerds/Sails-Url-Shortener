@@ -39,7 +39,6 @@ module.exports = {
 		var hash = req.param('hash','')
 		if(hash != '') {
 			var hostName = req.hostName
-			hostName = 'dv.sg'
 			Domain.findOne({domain:hostName}, function(err,domainResult) {
 				if(domainResult) {
 					Url.findOne({domainID:domainResult.id,hash:hash}, function(err,result) {

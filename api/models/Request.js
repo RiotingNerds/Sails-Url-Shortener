@@ -5,6 +5,7 @@
 * @docs        :: http://sailsjs.org/#!documentation/models
 */
 
+var geoip = require("geoip-native");
 module.exports = {
 
   attributes: {
@@ -12,6 +13,8 @@ module.exports = {
     requestDate: {type: 'datetime'},
     browser: {type: 'string'},
     location : {type: 'string'},
+    locationCode : {type: 'string'},
+    rawLocation : {type: 'string'},
     ip: {type: 'string'},
     ipv6: {type: 'string'},
     rawRequest: {type: 'text'},
@@ -20,7 +23,28 @@ module.exports = {
     queryString: {type: 'string'},
     payload: {type: 'text'}
   },
-  addRequest: function(req) {
-    
+  addRequest: function(req,urlModel) {
+    var headers = JSON.stringify(req.headers)
+    var params = {
+      URLID: urlModel.id,
+      requestDate: new Date(),
+      rawRequest: headers,
+      payload: req.body,
+      ip:req.ip,
+      querySTring: req.query,
+      referrer: req.get('referrer')
+    }
+    var location = geoip.lookup(req.ip);
+
+    params.location = location.name
+    params.locationCode = location.code
+    params.rawLocation = JSON.stringify(location)
+    Request.create(params).exec(function(err,result) {
+      Request.count({URLID:urlModel.id},function(err,count) {
+        Url.update({id:result.URLID},{totalRequested:count,lastRequested:new Date()},function(err,URLResult){
+
+        })
+      })
+    })
   }
 };

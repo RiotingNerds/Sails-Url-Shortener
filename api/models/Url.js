@@ -23,6 +23,10 @@ module.exports = {
     lastRequested: {
       type: 'datetime'
     },
+    totalRequested: {
+      type: 'integer',
+      defaultsTo: 0
+    },
     activeOn: {
       type: 'datetime'
     },
