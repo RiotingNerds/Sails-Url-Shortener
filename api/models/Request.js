@@ -19,5 +19,8 @@ module.exports = {
     requestType: {type: 'string'},
     queryString: {type: 'string'},
     payload: {type: 'text'}
+  },
+  addRequest: function(req) {
+    
   }
 };

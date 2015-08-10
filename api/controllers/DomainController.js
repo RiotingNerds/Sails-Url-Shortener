@@ -6,9 +6,6 @@
  */
 
 module.exports = {
-	_config: {
-			rest:false
-		},
   /**
    * `DomainController.url()`
    */
