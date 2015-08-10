@@ -73,6 +73,9 @@
           self.setState({
             shortURL:data.message.fullURL
           })
+          var updateEvent = new CustomEvent("refreshUrlList")
+          window.dispatchEvent(updateEvent)
+          //$(window).trigger('refreshUrlList')
         })
         return false;
       },
@@ -98,6 +101,16 @@
             </header>
             <div className="panel-body">
                 <div className="position-center">
+                  <div className={resultParamsClass}>
+                      <button data-dismiss="alert" className="close close-sm" type="button">
+                          <i className="fa fa-times"></i>
+                      </button>
+                      <h4>
+                          <i className="icon-ok-sign"></i>
+                          URL created
+                      </h4>
+                      <p>Copy the following link. <a target="_blank" href={"http://"+this.state.shortURL}>{"http://"+this.state.shortURL}</a></p>
+                  </div>
                   <form className="form-horizontal" role="form" onSubmit={this.formSubmit}>
                     <div className="form-group">
                         <label htmlFor="Url_redirectURL">URL</label>
@@ -112,16 +125,7 @@
                     </div>
                     <button type="submit" className="btn btn-primary btn-lg">Shorten It</button>
                   </form>
-                  <div className={resultParamsClass}>
-                      <button data-dismiss="alert" className="close close-sm" type="button">
-                          <i className="fa fa-times"></i>
-                      </button>
-                      <h4>
-                          <i className="icon-ok-sign"></i>
-                          URL created
-                      </h4>
-                      <p>Copy the following link. <a target="_blank" href={"http://"+this.state.shortURL}>{"http://"+this.state.shortURL}</a></p>
-                  </div>
+
                 </div>
             </div>
           </section>

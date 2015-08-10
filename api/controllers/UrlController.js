@@ -35,6 +35,17 @@ module.exports = {
 			}
 		})
 	},
+	delete: function(req,res) {
+		var id = req.query.id || 0
+		Url.delete({id:id}, function(err,result) {
+			return response.success(res,'Url deleted')
+		})
+	},
+	topList: function(req,res) {
+		Url.getUrlFromAccount(0, function(err,urlResults) {
+			return response.success(res,'item found',{data:urlResults})
+		})
+	},
 	redirect: function(req,res) {
 		var hash = req.param('hash','')
 		if(hash != '') {

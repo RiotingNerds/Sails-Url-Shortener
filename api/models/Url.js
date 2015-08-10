@@ -16,6 +16,10 @@ module.exports = {
     fullURL: {
       type: 'string'
     },
+    accountID: {
+      type: 'integer',
+      defaultsTo: 0
+    },
     hash: {
       type:'string',
       size: 125,
@@ -36,6 +40,14 @@ module.exports = {
     active: {
       type: 'boolean',
       defaultsTo: true
+    },
+    linkableFullURL: function() {
+      return "http://"+this.fullURL
     }
+  },
+  getUrlFromAccount: function(accountID,cb) {
+    Url.find({accountID:accountID,active:true})
+      .limit(10)
+      .exec(cb)
   }
 };

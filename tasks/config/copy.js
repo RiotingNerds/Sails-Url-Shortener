@@ -24,6 +24,9 @@ module.exports = function(grunt) {
 				dest: '.tmp/public'
 			}]
 		},
+		prod: {
+			files: [{expand: true, src: ['./assets/styles/font-awesome/fonts/*'],flatten: true, dest: '.tmp/public/fonts', filter: 'isFile'}]
+		},
 		build: {
 			files: [{
 				expand: true,

@@ -17,7 +17,7 @@
         var params = $(event.target).serialize();
 
         $.post('/domain',params, function(data) {
-
+          
         })
         return false;
       },
