@@ -22,6 +22,19 @@ module.exports = {
 			}
 		})
 	},
+	saveForm: function(req,res) {
+		var params = req.body.Url
+		Domain.findOne({id:params.domainID}).exec(function(err,result) {
+			if(result) {
+				params.fullURL = result.domain+'/'+params.hash
+				Url.create(params).exec(function(err,result) {
+					return response.success(res,result)
+				})
+			} else {
+				return response.makeError(res,"Unable to find domain")
+			}
+		})
+	},
 	redirect: function(req,res) {
 		var hash = req.param('hash','')
 		if(hash != '') {

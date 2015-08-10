@@ -8,8 +8,21 @@
 module.exports = {
 
   attributes: {
-    domain: { type: 'string' },
-    active: { type: 'boolean' },
-    totalShorteningURL: { type: 'integer' }
+    accountID: {
+      type: 'integer'
+    },
+    domain: {
+      type: 'string',
+      size: 125,
+      required: true
+    },
+    active: {
+      type: 'boolean',
+      defaultsTo: 1
+    },
+    totalShortenURL: {
+      type: 'integer',
+      defaultsTo: 0
+    }
   }
 };

@@ -1,9 +1,40 @@
 (function(){
   'use strict'
   var React = require('react'),
-      bootstrap = require('react-bootstrap'),
       classNames = require('classnames'),
       randomString = require('../../api/helpers/hash')
+
+  var InputGroup = React.createClass({
+    getInitialState: function() {
+      return {
+        domainID:(this.props.domainData.length)?this.props.domainData[0].id: 0,
+        domainName:(this.props.domainData.length)?this.props.domainData[0].domain: ""
+      };
+    },
+    changeDomainID: function(event) {
+      this.setState({
+        domainID:$(event.target).attr('data-domainid'),
+        domainName:$(event.target).attr('data-domainname')
+      })
+    },
+    render: function() {
+      var self = this
+      var nodes = this.props.domainData.map(function(domain) {
+        return (
+          <li key={domain.id}><a href="#" onClick={self.changeDomainID} data-domainid={domain.id} data-domainname={domain.domain}>{domain.domain}</a></li>
+        )
+      })
+      return (
+        <div className="input-group-btn">
+          <button type="button" className="btn-lg btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{this.state.domainName+' '}<span className="caret"></span></button>
+          <input name="Url[domainID]" type="hidden" value={this.state.domainID} />
+          <ul className="dropdown-menu">
+            {nodes}
+          </ul>
+        </div>
+      )
+    }
+  })
 
   var App = React.createClass({
       getInitialState: function() {
@@ -58,8 +89,10 @@
                     <form className="form-horizontal" role="form" onSubmit={this.formSubmit}>
                     <div className="form-group">
                         <label htmlFor="Url_redirectURL">URL</label>
-                        <input type="text" name="Url[redirectURL]" className="form-control input-lg" onBlur={this.randomString} id="Url_redirectURL" placeholder="URL" />
-                        <input type="hidden" name="Url[domainID]" value="5" />
+                        <div className="input-group">
+                          <InputGroup domainData={this.props.domainData} />
+                          <input type="text" name="Url[redirectURL]" className="form-control input-lg" onBlur={this.randomString} id="Url_redirectURL" placeholder="URL" />
+                        </div>
                     </div>
                     <div className={paramsClass}>
                         <label htmlFor="Url_parameter">Hash</label>

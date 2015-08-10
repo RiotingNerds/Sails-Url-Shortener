@@ -33,7 +33,14 @@ module.exports.routes = {
   ***************************************************************************/
 
   '/': 'site.index',
-  
+
+  'GET /domain': 'domain.index',
+
+  'POST /domain': 'domain.saveForm',
+
+  'GET /url':'url/index',
+
+  'POST /url':'url/saveForm',
 
   /***************************************************************************
   *                                                                          *

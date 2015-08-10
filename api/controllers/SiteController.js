@@ -9,7 +9,9 @@ var React = require('../helpers/React')
 
 module.exports = {
 	index:function(req,res) {
-		var shortenForm = React.renderToString('site/urlShortener.jsx')
-		return res.view('site/index',{shortenForm:shortenForm})
+		Domain.find({active:1}, function(err,results) {
+			var shortenForm = React.renderToString('site/urlshortener.jsx',{domainData:results})			
+			return res.view('site/index',{shortenForm:shortenForm,domainData:results})
+		})
 	}
 };

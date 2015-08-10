@@ -9,11 +9,29 @@ module.exports = {
 
   attributes: {
     domainID : { type: 'integer' },
-    redirectURL: { type: 'text' },
-    fullURL: {type: 'string'},
-    hash: {type:'string'},
-    lastRequested: {type: 'datetime'},
-    activeDate: {type: 'datetime'},
-    active: {type: 'boolean'}
+    redirectURL: {
+      type: 'text',
+      required: true
+    },
+    fullURL: {
+      type: 'string'
+    },
+    hash: {
+      type:'string',
+      size: 125,
+    },
+    lastRequested: {
+      type: 'datetime'
+    },
+    activeOn: {
+      type: 'datetime'
+    },
+    expiredOn: {
+      type: 'datetime'
+    },
+    active: {
+      type: 'boolean',
+      defaultsTo: true
+    }
   }
 };
