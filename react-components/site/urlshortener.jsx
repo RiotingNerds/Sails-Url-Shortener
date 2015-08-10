@@ -41,7 +41,8 @@
         return {
           hashCharCount:3,
           hash:"",
-          hashChanged: false
+          hashChanged: false,
+          shortURL: ""
         };
       },
       checkServer: function(value) {
@@ -67,9 +68,11 @@
       },
       formSubmit: function(event) {
         var params = $(event.target).serialize();
-
+        var self = this
         $.post('/Url/create',params, function(data) {
-
+          self.setState({
+            shortURL:data.message.fullURL
+          })
         })
         return false;
       },
@@ -79,6 +82,15 @@
           'parameterField':true,
           'showParameters':true
         })
+        var resultParamsClass = classNames({
+          'parameterField':true,
+          'showParameters':(this.state.shortURL == '')?false:true,
+          'alert':true,
+          "alert-success":true,
+          "alert-block": true,
+          "fade":true,
+          "in":(this.state.shortURL == '')?false:true
+        })
         return (
           <section className="panel" id="shorteningForm">
             <header className="panel-heading">
@@ -86,7 +98,7 @@
             </header>
             <div className="panel-body">
                 <div className="position-center">
-                    <form className="form-horizontal" role="form" onSubmit={this.formSubmit}>
+                  <form className="form-horizontal" role="form" onSubmit={this.formSubmit}>
                     <div className="form-group">
                         <label htmlFor="Url_redirectURL">URL</label>
                         <div className="input-group">
@@ -99,7 +111,17 @@
                         <input type="text" onChange={this.handleHashChange} name="Url[hash]" value={this.state.hash} className="form-control input-lg" id="Url_parameter" placeholder="Hash" />
                     </div>
                     <button type="submit" className="btn btn-primary btn-lg">Shorten It</button>
-                </form>
+                  </form>
+                  <div className={resultParamsClass}>
+                      <button data-dismiss="alert" className="close close-sm" type="button">
+                          <i className="fa fa-times"></i>
+                      </button>
+                      <h4>
+                          <i className="icon-ok-sign"></i>
+                          URL created
+                      </h4>
+                      <p>Copy the following link. <a target="_blank" href={"http://"+this.state.shortURL}>{"http://"+this.state.shortURL}</a></p>
+                  </div>
                 </div>
             </div>
           </section>

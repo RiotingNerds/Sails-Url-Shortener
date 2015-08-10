@@ -9,7 +9,7 @@ module.exports = {
 	redirect: function(req,res) {
 		var hash = req.param('hash','')
 		if(hash != '') {
-			var hostName = req.hostName			
+			var hostName = req.headers.host			
 			Domain.findOne({domain:hostName}, function(err,domainResult) {
 				if(domainResult) {
 					Url.findOne({domainID:domainResult.id,hash:hash}, function(err,result) {
