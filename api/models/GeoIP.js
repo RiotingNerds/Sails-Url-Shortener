@@ -13,7 +13,6 @@ module.exports = {
     },
     geoNameID: {
       type: 'integer'
-
     },
     highRange: {
       type: 'integer'
@@ -27,11 +26,11 @@ module.exports = {
     long: {
       type: 'float'
     },
-    updatedOn {
+    updatedOn: {
       type: 'datetime'
     },
     geoCountryNameID: {
-      type: 'integer'
+      type: 'integer',
       defaultsTo: 1
     },
     postalCode: {

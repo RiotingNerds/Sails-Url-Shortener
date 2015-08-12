@@ -31,7 +31,7 @@ module.exports = {
       type: 'string',
       size: 256
     },
-    updatedOn {
+    updatedOn: {
       type: 'datetime'
     },
     subdivision: {
