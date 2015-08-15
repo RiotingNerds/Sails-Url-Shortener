@@ -1,5 +1,5 @@
 /**
-* Domain.js
+* GeoIP.js
 *
 * @description :: TODO: You might write a short summary of how this model works and what it represents here.
 * @docs        :: http://sailsjs.org/#!documentation/models
@@ -11,8 +11,11 @@ module.exports = {
       type: 'string',
       size: 15
     },
-    geoNameID: {
-      type: 'integer'
+    geoName: {
+      type: 'integer',
+      model: 'geoname',
+      columnName: 'geoNameID',
+      via: 'geoNameID'
     },
     highRange: {
       type: 'integer'
@@ -20,10 +23,10 @@ module.exports = {
     lowRange: {
       type: 'integer'
     },
-    lat: {
+    latitude: {
       type: 'float'
     },
-    long: {
+    longitude: {
       type: 'float'
     },
     updatedOn: {

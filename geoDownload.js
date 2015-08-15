@@ -1,18 +1,16 @@
 var fs = require('fs'),
     Sails = require('sails'),
     AdmZip = require('adm-zip'),
-    tempFolder = 'tempFolders/',
+    tempFolder = 'tempFolder/',
     http = require("http"),
     fs = require('fs'),
     rimraf = require('rimraf'),
-    savingData = [],
     async = require('async'),
-    asyncTwo = require('async'),
     callDataSet = [],
     csv = require('fast-csv'),
     csvLocation = require('fast-csv'),
     ip = require('ip'),
-    path = require('path')
+    moment = require('moment')
 
 Sails.load({
   log: {level: 'debug'},
@@ -28,6 +26,7 @@ Sails.load({
     var zipEntries = zip.getEntries();
     zip.extractAllTo(tempFolder, true);
     var row = 0;
+    var updatedOn = moment().format('YYYY-MM-DD HH:mm:ss')
     zipEntries.forEach(function(zipEntry) {
       if(zipEntry.name == 'GeoLite2-City-Blocks-IPv4.csv') {
         callDataSet.push(function(cb){
@@ -44,25 +43,26 @@ Sails.load({
               lowRange:ip.toLong(newIP.lastAddress),
               geoCountryNameID: data.registered_country_geoname_id || 0,
               postalCode:data.postal_code || '',
-              lat:data.latitude || 0,
-              long:data.longitude || 0
+              latitude:data.latitude || 0,
+              longitude:data.longitude || 0,
+              updatedOn: updatedOn
               }
            })
            .pipe(csv.createWriteStream())
            .pipe(fs.createWriteStream(tempFolder+"ip.csv", {encoding: "utf8"}))
            .on("finish", function(){
-
              console.log(tempFolder+"ip.csv")
-             GeoName.query("load data local infile '"+tempFolder+"ip.csv' into table geoip fields"
+             sails.models.geoname.query("load data local infile '"+tempFolder+"ip.csv' into table geoip fields"
                  +" terminated by ',' enclosed by '\"'"
                  +" lines terminated by '\n'"
-                 +" (networkIP,geoNameID,highRange,lowRange,geoCountryNameID,postalCode,lat,long);",
+                 +" (networkIP,geoNameID,highRange,lowRange,geoCountryNameID,postalCode,latitude,longitude,updatedOn);",
              function(err, results) {
-               if (err) return res.serverError(err);
-                 cb();
+               if (err)
+                console.log(err);
+                cb();
              });
            });
-        });
+        }.bind(sails));
       }
       if(zipEntry.name == 'GeoLite2-City-Locations-en.csv') {
         callDataSet.push(function(cb){
@@ -80,35 +80,35 @@ Sails.load({
                  countryName: data.country_name,
                  cityName:data.city_name || '',
                  subdivision:data.subdivision_1_name,
+                 updatedOn:updatedOn
                }
              })
              .pipe(csvLocation.createWriteStream())
              .pipe(fs.createWriteStream(tempFolder+"geoname.csv", {encoding: "utf8"}))
              .on("finish", function(){
-               console.log(tempFolder+"geoname.csv")
-
-               GeoName.query("load data local infile '"+tempFolder+"geoname.csv' into table geoname fields"
+               sails.models.geoname.query("load data local infile '"+tempFolder+"geoname.csv' into table geoname fields"
                    +" terminated by ',' enclosed by '\"'"
                    +" lines terminated by '\n'"
-                   +" (continent,geoNameID,continentName,ISOCode,countryName,cityName,subdivision);",
+                   +" (continent,geoNameID,continentName,ISOCode,countryName,cityName,subdivision,updatedOn);",
                function(err, results) {
                  if (err) {
                    console.log(err);
-                   res;
                  }
                    cb();
                });
              });
-        });
+        }.bind(sails));
       }
     });
 
     async.parallel(callDataSet, function(err,results) {
       console.log('end')
+      sails.models.geoip.query('delete from geoip where updatedOn<>"'+updatedOn+'"')
+      sails.models.geoip.query('delete from geoname where updatedOn<>"'+updatedOn+'"')
       sails.lower()
     })
 
-  })
+  }.bind(moment))
 
 
 });
