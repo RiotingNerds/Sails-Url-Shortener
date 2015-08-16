@@ -17,9 +17,9 @@ module.exports = {
   },
   saveForm: function(req,res) {
     var domain = req.param('Domain')
-    
+
     if(domain.domain) {
-      Domain.create({domain:domain.domain}).exec(function(err,result) {
+      Domain.create({domain:domain.domain,defaultLink:domain.defaultLink}).exec(function(err,result) {
         if(!err && result) {
           return response.success(res,{result:result})
         } else {
@@ -34,6 +34,15 @@ module.exports = {
       return response.validationError(res,"Domain cannot be empty")
     }
   },
+
+  list: function(req,res) {
+    Domain.find({}).exec(function(err,results) {
+      if(!err)
+        return response.success(res,"Data Found",{data:results})
+      return response.makeError(res,"No result found.")
+    })
+  }
+
   index: function (req, res) {
     Domain.find({}).exec(function(err,results){
       var indexContent = react.renderToString("domain/index.jsx",{data:results})

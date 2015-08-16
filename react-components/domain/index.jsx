@@ -4,7 +4,16 @@
       DomainForm = require('./form.jsx'),
       DomainList = require('./list.jsx')
   var App = React.createClass({
-      render: function() {        
+      refreshList:function() {
+
+      },
+      componentDidMount: function() {
+        window.addEventListener('refreshList', this.refreshList);
+      },
+      componentWillUnmount: function() {
+        window.removeEventListener('refreshList', this.refreshList);
+      },
+      render: function() {
         return (
           <section id="indexContent">
             <div className="row">

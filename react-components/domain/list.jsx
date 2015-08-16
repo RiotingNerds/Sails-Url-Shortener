@@ -5,7 +5,8 @@
   var Rows = React.createClass({
     getInitialState: function() {
       return {
-        accountID:this.props.accountID || 0
+        accountID:this.props.accountID || 0,
+        data:this.props.data ||[]
       };
     },
     statusLabel: function(status) {
@@ -18,6 +19,19 @@
 
       }
     },
+    refreshList:function() {
+      $.getJSON('/domain/list',function(data){
+        this.setState({
+          data:data.data
+        })
+      })
+    },
+    componentDidMount: function() {
+      window.addEventListener('refreshList', this.refreshList);
+    },
+    componentWillUnmount: function() {
+      window.removeEventListener('refreshList', this.refreshList);
+    },
     actionLink: function(domain) {
       return (
         <span>
@@ -29,7 +43,7 @@
     },
     render: function() {
       var self = this
-      var nodes = this.props.data.map(function(domain) {
+      var nodes = this.state.data.map(function(domain) {
         var style = {'textAlign':'center'}
         var address = ''
         return (

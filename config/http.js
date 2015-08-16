@@ -24,6 +24,7 @@ module.exports.http = {
   middleware: {
     passportInit    : require('passport').initialize(),
     passportSession : require('passport').session(),
+    userAgent       : require('express-useragent').express(),
   /***************************************************************************
   *                                                                          *
   * The order in which middleware should be run for HTTP request. (the Sails *
@@ -35,6 +36,7 @@ module.exports.http = {
     'startRequestTimer',
     'cookieParser',
     'session',
+    'userAgent',
     'passportInit',
     'passportSession',
     'myRequestLogger',

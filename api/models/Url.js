@@ -46,7 +46,7 @@ module.exports = {
     }
   },
   getUrlFromAccount: function(accountID,cb) {
-    Url.find({accountID:accountID,active:true})
+    Url.find({where: {accountID:accountID,active:true}, sort: 'totalRequested DESC'})
       .limit(10)
       .exec(cb)
   }

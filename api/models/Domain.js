@@ -16,6 +16,10 @@ module.exports = {
       size: 125,
       required: true
     },
+    defaultLink: {
+      type:'string',
+      size: 1024
+    },
     active: {
       type: 'boolean',
       defaultsTo: 1

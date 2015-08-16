@@ -5,35 +5,53 @@
 * @docs        :: http://sailsjs.org/#!documentation/models
 */
 
-var ip = require('ip')
+var ip = require('ip'),
+    requestIp = require('request-ip')
 module.exports = {
 
   attributes: {
     URLID: {type: 'integer'},
     requestDate: {type: 'datetime'},
     browser: {type: 'string'},
-    location : {type: 'string'},
-    locationCode : {type: 'string'},
-    rawLocation : {type: 'string'},
     ip: {type: 'string'},
     ipv6: {type: 'string'},
     rawRequest: {type: 'text'},
     referrer: {type: 'text'},
     requestType: {type: 'string'},
     queryString: {type: 'string'},
-    payload: {type: 'text'}
+    payload: {type: 'text'},
+    os: {
+      type:'string',
+    },
+    agentSource: {
+      type:"text"
+    },
+    platform: {
+      type:"string"
+    }
   },
   addRequest: function(req,urlModel) {
     var headers = JSON.stringify(req.headers)
     var query = JSON.stringify(req.query)
+    var ip = requestIp.getClientIp(req)
+
+    var payload = JSON.stringify({
+      useragent: req.useragent,
+      headers: req.headers
+    })
     var params = {
       URLID: urlModel.id,
       requestDate: new Date(),
       rawRequest: headers,
       payload: req.body,
-      ip:req.ip,
+      ip:ip || req.ip,
       queryString: query,
-      referrer: req.get('referrer')
+      referrer: req.get('referrer') || 'direct',
+      os: req.useragent.os,
+      browser: req.useragent.browser,
+      platform: req.useragent.platform,
+      agentSource: req.useragent.source,
+      payload:payload
     }
     Request.create(params).exec(function(err,result) {
       Request.count({URLID:urlModel.id},function(err,count) {

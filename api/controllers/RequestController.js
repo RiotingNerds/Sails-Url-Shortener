@@ -20,8 +20,9 @@ module.exports = {
 							Request.addRequest(req,result)
 							return res.redirect(301, result.redirectURL);
 						}
-						else
-							return res.redirect(301, '/');
+						else {
+							return res.redirect(301, domainResult.defaultLink || '/');
+						}
 					})
 				} else {
 					return res.redirect(301, '/');

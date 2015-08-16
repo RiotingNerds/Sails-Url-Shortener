@@ -17,7 +17,7 @@
         var params = $(event.target).serialize();
 
         $.post('/domain',params, function(data) {
-          
+
         })
         return false;
       },
@@ -34,6 +34,10 @@
                 <div className="form-group">
                     <label className="sr-only" htmlFor="Url_redirectURL">URL</label>
                     <input type="text" name="Domain[domain]" className="form-control" id="Domain_domain" placeholder="Domain" />
+                </div>{" "}
+                <div className="form-group">
+                    <label className="sr-only" htmlFor="Url_redirectURL">Default Link</label>
+                    <input type="text" name="Domain[defaultLink]" className="form-control" id="Domain_defaultLink" placeholder="Url to be redirected if hash is not found." />
                 </div>{" "}
                 <button type="submit" className="btn btn-success">Add</button>
               </form>
