@@ -9,8 +9,11 @@ module.exports = {
 	redirect: function(req,res) {
 		var hash = req.param('hash','')
 		if(hash != '') {
-			var hostName = req.headers.host			
+			var hostName = req.headers.host
+			hostName = 'boxe.sg'
 			Domain.findOne({domain:hostName}, function(err,domainResult) {
+				if (!res.getHeader('Cache-Control'))
+					res.setHeader('Cache-Control', 'public, max-age=' + (60*30));
 				if(domainResult) {
 					Url.findOne({domainID:domainResult.id,hash:hash}, function(err,result) {
 						if(result) {

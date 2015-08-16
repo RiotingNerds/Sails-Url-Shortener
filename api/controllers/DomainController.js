@@ -16,7 +16,8 @@ module.exports = {
 
   },
   saveForm: function(req,res) {
-    var domain = req.param('Domain',{})
+    var domain = req.param('Domain')
+    
     if(domain.domain) {
       Domain.create({domain:domain.domain}).exec(function(err,result) {
         if(!err && result) {

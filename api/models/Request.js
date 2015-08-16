@@ -5,8 +5,7 @@
 * @docs        :: http://sailsjs.org/#!documentation/models
 */
 
-var geoip = require("geoip-native"),
-    ip = require('ip')
+var ip = require('ip')
 module.exports = {
 
   attributes: {
@@ -26,19 +25,19 @@ module.exports = {
   },
   addRequest: function(req,urlModel) {
     var headers = JSON.stringify(req.headers)
+    var query = JSON.stringify(req.query)
     var params = {
       URLID: urlModel.id,
       requestDate: new Date(),
       rawRequest: headers,
       payload: req.body,
       ip:req.ip,
-      queryString: req.query,
+      queryString: query,
       referrer: req.get('referrer')
     }
-    params.rawLocation = JSON.stringify(location)
     Request.create(params).exec(function(err,result) {
       Request.count({URLID:urlModel.id},function(err,count) {
-        Url.update({id:result.URLID},{totalRequested:count,lastRequested:new Date()},function(err,URLResult){
+        Url.update({id:urlModel.id},{totalRequested:count,lastRequested:new Date()},function(err,URLResult){
 
         })
         RequestLocation.addRecord(result)

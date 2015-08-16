@@ -13,9 +13,8 @@ module.exports = {
     },
     geoName: {
       type: 'integer',
-      model: 'geoname',
-      columnName: 'geoNameID',
-      via: 'geoNameID'
+      model: 'GeoName',
+      columnName: 'geoNameID'
     },
     highRange: {
       type: 'integer'
@@ -32,9 +31,11 @@ module.exports = {
     updatedOn: {
       type: 'datetime'
     },
-    geoCountryNameID: {
+    country: {
       type: 'integer',
-      defaultsTo: 1
+      defaultsTo: 1,
+      model: 'geoname',
+      columnName: 'geoCountryNameID'
     },
     postalCode: {
       type: 'string',

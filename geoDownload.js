@@ -11,26 +11,29 @@
       csv = require('fast-csv'),
       csvLocation = require('fast-csv'),
       ip = require('ip'),
-      moment = require('moment')
+      moment = require('moment'),
+      request = require('request')
 
-  Sails.load({
-    log: {level: 'debug'},
-    }, function(err, sails) {
-    // Do some stuff with sails here
+
     if(fs.existsSync(tempFolder)) {
       rimraf.sync(tempFolder)
     }
     fs.mkdirSync(tempFolder)
+    var updatedOn = moment().format('YYYY-MM-DD HH:mm:ss')
     //tempFolder = __dirname+'/'+tempFolder
     download('http://geolite.maxmind.com/download/geoip/database/GeoLite2-City-CSV.zip',function() {
       var zip = new AdmZip(tempFolder+'geo.zip');
       var zipEntries = zip.getEntries();
       zip.extractAllTo(tempFolder, true);
       var row = 0;
-      var updatedOn = moment().format('YYYY-MM-DD HH:mm:ss')
       zipEntries.forEach(function(zipEntry) {
         if(zipEntry.name == 'GeoLite2-City-Blocks-IPv4.csv') {
           callDataSet.push(function(cb){
+            var ipCSVFS = fs.createWriteStream(tempFolder+"ip.csv", {encoding: "utf8"})
+            ipCSVFS
+              .on('finish',function() {
+                cb()
+              })
             csv
              .fromPath(tempFolder+zipEntry.entryName, {headers: true})
              .transform(function(data){
@@ -40,8 +43,8 @@
                return {
                 networkID: data.network,
                 geoNameID:data.geoname_id || 0,
-                highRange:ip.toLong(newIP.firstAddress),
-                lowRange:ip.toLong(newIP.lastAddress),
+                highRange:ip.toLong(newIP.lastAddress),
+                lowRange:ip.toLong(newIP.firstAddress),
                 geoCountryNameID: data.registered_country_geoname_id || 0,
                 postalCode:data.postal_code || '',
                 latitude:data.latitude || 0,
@@ -50,30 +53,23 @@
                 }
              })
              .pipe(csv.createWriteStream())
-             .pipe(fs.createWriteStream(tempFolder+"ip.csv", {encoding: "utf8"}))
-             .on("finish", function(){
-               console.log(tempFolder+"ip.csv")
-               sails.models.geoname.query("load data local infile '"+tempFolder+"ip.csv' into table geoip fields"
-                   +" terminated by ',' enclosed by '\"'"
-                   +" lines terminated by '\n'"
-                   +" (networkIP,geoNameID,highRange,lowRange,geoCountryNameID,postalCode,latitude,longitude,updatedOn);",
-               function(err, results) {
-                 if (err)
-                  console.log(err);
-                  cb();
-               });
-             });
-          }.bind(sails));
+             .pipe(ipCSVFS)
+          });
         }
         if(zipEntry.name == 'GeoLite2-City-Locations-en.csv') {
           callDataSet.push(function(cb){
-            //geoname_id,locale_code,continent_code,continent_name,country_iso_code,country_name,subdivision_1_iso_code,subdivision_1_name,subdivision_2_iso_code,subdivision_2_name,city_name,metro_code,time_zone
+            var geonameFS = fs.createWriteStream(tempFolder+"geoname.csv", {encoding: "utf8"})
+            geonameFS
+              .on('finish', function() {
+                cb();
+              });
             csvLocation
                .fromPath(tempFolder+zipEntry.entryName, {headers: true})
                .transform(function(data){
                  row++
                  console.log(row)
                  return {
+                   id:data.geoname_id || 0,
                    continent: data.continent_code,
                    geoNameID:data.geoname_id || 0,
                    continentName:data.continent_name,
@@ -85,48 +81,59 @@
                  }
                })
                .pipe(csvLocation.createWriteStream())
-               .pipe(fs.createWriteStream(tempFolder+"geoname.csv", {encoding: "utf8"}))
-               .on("finish", function(){
-                 sails.models.geoname.query("load data local infile '"+tempFolder+"geoname.csv' into table geoname fields"
-                     +" terminated by ',' enclosed by '\"'"
-                     +" lines terminated by '\n'"
-                     +" (continent,geoNameID,continentName,ISOCode,countryName,cityName,subdivision,updatedOn);",
-                 function(err, results) {
-                   if (err) {
-                     console.log(err);
-                   }
-                     cb();
-                 });
-               });
-          }.bind(sails));
+               .pipe(geonameFS)
+          });
         }
       });
-
       async.parallel(callDataSet, function(err,results) {
         console.log('end')
-        sails.models.geoip.query('delete from geoip where updatedOn<>"'+updatedOn+'"')
-        sails.models.geoip.query('delete from geoname where updatedOn<>"'+updatedOn+'"')
-        sails.lower()
-        process.exit();
-      })
+        console.log(err)
+        Sails.load({log:{level:'debug'}}, function(err, sails) {
+          // Do some stuff with sails here
+          console.log(err);
 
-    }.bind(moment))
-  });
+          sails.models.geoname.query("load data local infile '"+tempFolder+"geoname.csv' into table geoname fields"
+              +" terminated by ',' enclosed by '\"'"
+              +" lines terminated by '\n'"
+              +" (continent,geoNameID,continentName,ISOCode,countryName,cityName,subdivision,updatedOn);",
+          function(err, results) {
+            if (err) {
+              console.log(err);
+            }
+            sails.models.geoname.query("load data local infile '"+tempFolder+"ip.csv' into table geoip fields"
+                +" terminated by ',' enclosed by '\"'"
+                +" lines terminated by '\n'"
+                +" (id,networkIP,geoNameID,highRange,lowRange,geoCountryNameID,postalCode,latitude,longitude,updatedOn);",
+            function(err, results) {
+              if (err)
+               console.log(err);
+            });
+          });
+
+        });
+      })
+    })
+
 
 
   function download(url, cb) {
     var data = "";
     var file = fs.createWriteStream(tempFolder+'geo.zip');
-    var request = http.get(url, function(res) {
-      res.pipe(file);
-      file.on('finish', function() {
-        file.close(cb);
-      });
+    console.log('downloading')
+    file
+    .on('error',function(e) {
+      console.log(e)
+      console.log('file error')
+    })
+    .on('finish', function() {
+      file.close(cb);
     });
-
-    request.on('error', function(e) {
-      console.log("Got error: " + e.message);
-    });
+    var row = 0;
+    request
+      .get(url)
+      .on('error', function(e) {
+        console.log("Got error: " + e.message);
+      })
+      .pipe(file)
   }
-
 }())
