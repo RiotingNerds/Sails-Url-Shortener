@@ -62,8 +62,8 @@
         this.setState({hashChanged:true})
         this.checkServer(event.target.value)
       },
-      randomString: function(event) {
-        if(!this.state.hashChanged)
+      randomString: function(event) {        
+        if(!this.state.hashChanged && $(event.target).val() != "")
           this.checkServer(randomString(this.state.hashCharCount))
       },
       formSubmit: function(event) {
