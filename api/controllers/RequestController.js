@@ -8,10 +8,9 @@
 module.exports = {
 	redirect: function(req,res) {
 		var hash = req.param('hash','')
-		if(hash != '') {
-			var hostName = req.headers.host
-			hostName = 'boxe.sg'
-			Domain.findOne({domain:hostName}, function(err,domainResult) {
+		var hostName = req.headers.host
+		Domain.findOne({domain:hostName}, function(err,domainResult) {
+			if(hash != '') {
 				if (!res.getHeader('Cache-Control'))
 					res.setHeader('Cache-Control', 'public, max-age=' + (60*30));
 				if(domainResult) {
@@ -21,14 +20,18 @@ module.exports = {
 							return res.redirect(301, result.redirectURL);
 						}
 						else {
-							return res.redirect(301, domainResult.defaultLink || '/');
+							return res.redirect(302, domainResult.defaultLink || '/');
 						}
 					})
 				} else {
 					return res.redirect(301, '/');
 				}
-
-			})
-		}
+			}
+			else {
+				if (!res.getHeader('Cache-Control'))
+					res.setHeader('Cache-Control', 'public, max-age=' + (60*60*24*7));
+				return res.redirect(301, domainResult.defaultLink || '/');
+			}
+		})
 	},
 };
