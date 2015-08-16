@@ -72,7 +72,6 @@ module.exports = {
           latitude: result.latitude,
           longitude: result.longitude,
           requestID: request.id
-
         }
         RequestLocation.create(params,function(err,result) {
 

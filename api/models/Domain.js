@@ -20,9 +20,19 @@ module.exports = {
       type: 'boolean',
       defaultsTo: 1
     },
+    system: {
+      type: 'boolean',
+      defaultsTo: 0
+    },
     totalShortenURL: {
       type: 'integer',
       defaultsTo: 0
     }
+  },
+  getAvailableURL: function(accountID,cb) {
+    Domain.find({active:1, or: [
+      {accountID: accountID},
+      {system: 1}
+    ]},cb)
   }
 };
