@@ -41,7 +41,7 @@ module.exports = {
         return response.success(res,"Data Found",{data:results})
       return response.makeError(res,"No result found.")
     })
-  }
+  },
 
   index: function (req, res) {
     Domain.find({}).exec(function(err,results){
