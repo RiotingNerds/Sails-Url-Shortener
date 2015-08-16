@@ -6,7 +6,8 @@
 */
 
 var ip = require('ip'),
-    requestIp = require('request-ip')
+    requestIp = require('request-ip'),
+    _ = require('lodash')
 module.exports = {
 
   attributes: {
