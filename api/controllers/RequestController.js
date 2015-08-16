@@ -8,7 +8,7 @@
 module.exports = {
 	redirect: function(req,res) {
 		var hash = req.param('hash','')
-		var hostName = req.headers.host
+		var hostName = req.headers.host		
 		Domain.findOne({domain:hostName}, function(err,domainResult) {
 			if(hash != '') {
 				if (!res.getHeader('Cache-Control'))

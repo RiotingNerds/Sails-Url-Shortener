@@ -2,7 +2,8 @@
   'use strict'
   var React = require('react'),
       classNames = require('classnames'),
-      randomString = require('../../api/helpers/hash')
+      randomString = require('../../api/helpers/hash'),
+      validator = require('validator')
 
   var InputGroup = React.createClass({
     getInitialState: function() {
@@ -62,7 +63,7 @@
         this.setState({hashChanged:true})
         this.checkServer(event.target.value)
       },
-      randomString: function(event) {        
+      randomString: function(event) {
         if(!this.state.hashChanged && $(event.target).val() != "")
           this.checkServer(randomString(this.state.hashCharCount))
       },
@@ -78,6 +79,30 @@
           //$(window).trigger('refreshUrlList')
         })
         return false;
+      },
+      componentDidMount: function() {
+        $("#urlShortenerForm").validate({
+          rules: {
+            "Url[redirectURL]": {
+              required: true,
+              minlength: 6
+            },
+            "Url[hash]": {
+              required: true,
+              minlength: 3
+            },
+          },
+          messages: {
+            "Url[redirectURL]": {
+              required: "Please enter a URL",
+              minlength: "Your username must consist of at least 6 characters"
+            },
+            "Url[hash]": {
+              required: "Hash cannot be empty",
+              minlength: "Your password must be at least 3 characters long"
+            },
+          }
+        });
       },
       render: function() {
         var paramsClass = classNames({
@@ -111,19 +136,19 @@
                       </h4>
                       <p>Copy the following link. <a target="_blank" href={"http://"+this.state.shortURL}>{"http://"+this.state.shortURL}</a></p>
                   </div>
-                  <form className="form-horizontal" role="form" onSubmit={this.formSubmit}>
+                  <form className="form-horizontal" role="form" id="urlShortenerForm" onSubmit={this.formSubmit}>
                     <div className="form-group">
                         <label htmlFor="Url_redirectURL">URL</label>
-                        <div className="input-group">
-                          <InputGroup domainData={this.props.domainData} />
-                          <input type="text" name="Url[redirectURL]" className="form-control input-lg" onBlur={this.randomString} id="Url_redirectURL" placeholder="URL" />
-                        </div>
+                        <input type="text" name="Url[redirectURL]" className="form-control input-lg" onBlur={this.randomString} id="Url_redirectURL" placeholder="URL" />
                     </div>
                     <div className={paramsClass}>
-                        <label htmlFor="Url_parameter">Hash</label>
+                      <label htmlFor="Url_parameter">Hash</label>
+                      <div className="input-group">
+                        <InputGroup domainData={this.props.domainData} />
                         <input type="text" onChange={this.handleHashChange} name="Url[hash]" value={this.state.hash} className="form-control input-lg" id="Url_parameter" placeholder="Hash" />
+                      </div>
                     </div>
-                    <button type="submit" className="btn btn-primary btn-lg">Shorten It</button>
+                    <button type="submit" className="btn btn-primary btn-lg">Generate</button>
                   </form>
 
                 </div>

@@ -25,6 +25,11 @@ module.exports.http = {
     passportInit    : require('passport').initialize(),
     passportSession : require('passport').session(),
     userAgent       : require('express-useragent').express(),
+    clearDomainPort     : function(req,res,next) {
+      var hostName = ( req.headers.host.match(/:/g) ) ? req.headers.host.slice( 0, req.headers.host.indexOf(":") ) : req.headers.host
+      req.hostWithoutPort = hostName
+      next()
+    },
   /***************************************************************************
   *                                                                          *
   * The order in which middleware should be run for HTTP request. (the Sails *
@@ -37,6 +42,7 @@ module.exports.http = {
     'cookieParser',
     'session',
     'userAgent',
+    'clearDomainPort',
     'passportInit',
     'passportSession',
     'myRequestLogger',

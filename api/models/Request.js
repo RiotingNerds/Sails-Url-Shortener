@@ -34,7 +34,7 @@ module.exports = {
     var headers = JSON.stringify(req.headers)
     var query = JSON.stringify(req.query)
     var ip = requestIp.getClientIp(req)
-
+    ip = _.trimLeft(ip,'::ffff:')
     var payload = JSON.stringify({
       useragent: req.useragent,
       headers: req.headers

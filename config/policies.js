@@ -29,7 +29,8 @@ module.exports.policies = {
   // '*': true,
 
   'SiteController': {
-    '*':true
+    '*':true,
+    'index': 'isCorrectDomain'
   }
   /***************************************************************************
   *                                                                          *

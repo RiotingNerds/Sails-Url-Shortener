@@ -11,26 +11,27 @@
     },
     statusLabel: function(status) {
       switch (status) {
-        case "true": return (<span className='label label-primary'>Active</span>)
+        case true: return (<span className='label label-primary'>Active</span>)
           break
-        case "false":
+        case false:
         default: return (<span className="label label-danger">InActive</span>)
           break;
 
       }
     },
     refreshList:function() {
+      var self = this
       $.getJSON('/domain/list',function(data){
-        this.setState({
+        self.setState({
           data:data.data
         })
       })
     },
     componentDidMount: function() {
-      window.addEventListener('refreshList', this.refreshList);
+      $( window ).bind( "refreshList", this.refreshList);
     },
     componentWillUnmount: function() {
-      window.removeEventListener('refreshList', this.refreshList);
+      $( window ).bind( "refreshList", this.refreshList);
     },
     actionLink: function(domain) {
       return (
@@ -50,7 +51,7 @@
           <tr key={domain.id}>
             <td>{domain.domain}</td>
             <td>{domain.urlCount || 0}</td>
-            <td>{self.statusLabel(domain.status)}</td>
+            <td>{self.statusLabel(domain.active)}</td>
             <td>{self.actionLink(domain)}</td>
           </tr>
         )
