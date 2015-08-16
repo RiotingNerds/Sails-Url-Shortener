@@ -48,8 +48,6 @@ module.exports = {
   },
   addRecord: function(request) {
     var ipLong = ip.toLong(request.ip)
-    console.log(ipLong)
-    ipLong =16811009
     GeoIP.findOne({
       highRange: {
         '>=':ipLong
