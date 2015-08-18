@@ -15,11 +15,16 @@
           accountID: 0
         };
       },
-      refreshUrl: function() {
+      login: function(e) {
         var self = this
-        $.getJSON('/url/topList',function(data){
-          self.setState({data:data.data})
+        var url = $(e.target).attr('action')
+        $.post(url,$(e.target).serialize(),function(data) {
+          //window.location="/dashboard"
+
+          location.reload();
         })
+
+        return false;
       },
       componentDidMount: function() {
         $(window).bind('refreshUrlList',this.refreshUrl)
@@ -31,11 +36,11 @@
       },
       render: function() {
         return (
-          <form className="form-signin" action="index.html">
+          <form className="form-signin" onSubmit={this.login} method="POST" action="/auth/doLogin">
         <h2 className="form-signin-heading">sign in now</h2>
         <div className="login-wrap">
             <div className="user-login-info">
-                <input type="text" name="Login[email]" className="form-control" placeholder="E-mail" autofocus />
+                <input type="text" name="Login[email]" className="form-control" placeholder="Username / E-mail" autofocus />
                 <input type="password" className="form-control" name="Login[password]" placeholder="Password" />
               </div>
             <label className="checkbox">

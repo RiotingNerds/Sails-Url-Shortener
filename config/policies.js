@@ -26,11 +26,20 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
-  // '*': true,
+  '*': true,
 
   'SiteController': {
     '*':true,
-    'index': 'isCorrectDomain'
+    'index': ['isCorrectDomain','alreadyLogin']
+  },
+  'DomainController': {
+    '*':'sessionAuth'
+  },
+  'DashboardController': {
+    '*':'sessionAuth'
+  },
+  'UrlController': {
+    '*':'sessionAuth'
   }
   /***************************************************************************
   *                                                                          *

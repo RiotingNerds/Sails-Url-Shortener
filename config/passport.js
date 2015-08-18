@@ -3,18 +3,20 @@ LocalStrategy = require('passport-local').Strategy,
 bcrypt = require('bcrypt');
 
 passport.serializeUser(function(user, done) {
-    done(null, user.id);
+    done(null, user);
 });
 
-passport.deserializeUser(function(id, done) {
+passport.deserializeUser(function(user, done) {
+  if(user.id == 0 && user.username == 'admin')
+    return done(null,user);
     User.findOne({ id: id } , function (err, user) {
         done(err, user);
     });
 });
 
 passport.use(new LocalStrategy({
-    usernameField: 'email',
-    passwordField: 'password'
+    usernameField: 'Login[email]',
+    passwordField: 'Login[password]'
   },
   function(username, password, done) {
     User.findUser(username,password,function(err,user) {
@@ -24,6 +26,6 @@ passport.use(new LocalStrategy({
         return done(null, false, { message: 'Incorrect username.' });
       }
       return done(null,user,{message: 'Logged in'})
-    })    
+    })
   }
 ));
