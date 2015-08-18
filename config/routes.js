@@ -35,6 +35,21 @@ module.exports.routes = {
   '/': 'site.index',
   'GET /domain': 'domain.index',
   'POST /domain': 'domain.saveForm',
+  'GET /login': {
+    controller:'auth',
+    action: 'login',
+    locals: {
+      layout: 'public'
+    }
+  },
+  'POST /login': 'auth.doLogin',
+  'GET /doLogin': {
+    controller:'auth',
+    action: 'login',
+    locals: {
+      layout: 'public'
+    }
+  },
   'POST /url':'url.saveForm',
   'POST /url/delete/:id':'url.delete',
 

@@ -36,8 +36,8 @@ module.exports = {
 		})
 	},
 	delete: function(req,res) {
-		var id = req.query.id || 0
-		Url.delete({id:id}, function(err,result) {
+		var id = req.params.id || 0
+		Url.update({id:id},{active:false}, function(err,result) {
 			return response.success(res,'Url deleted')
 		})
 	},

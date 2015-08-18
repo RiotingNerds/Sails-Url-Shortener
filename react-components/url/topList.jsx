@@ -3,19 +3,18 @@
   var React = require('react')
   var Rows = React.createClass({
     actionLink: function(urlModel) {
+      var deleteUrlHref = "/url/delete/"+urlModel.id
       return (
         <span>
           <a href={"/url/"+urlModel.id}><i className="fa fa-eye"></i></a>{" "}
-          <a href={"/url/delete/"+urlModel.id} onClick={this.deleteUrl}><i className="fa fa-trash-o"></i></a>{" "}
+          <a href={deleteUrlHref} onClick={this.deleteUrl.bind(this,deleteUrlHref)}><i className="fa fa-trash-o"></i></a>{" "}
           <a href={"http://"+urlModel.fullURL} target="_blank"><i className="fa fa-external-link"></i></a>
         </span>
       )
     },
-    deleteUrl: function(e) {
-      console.log($(e))
-      $.post($(e.target).attr('href'), function(data) {
-        var updateEvent = new CustomEvent("refreshUrlList")
-        window.dispatchEvent(updateEvent)
+    deleteUrl: function(url,e) {
+      $.post(url, function(data) {
+        $(window).trigger('refreshUrlList')
       });
       return false;
     },
@@ -58,10 +57,12 @@
         })
       },
       componentDidMount: function() {
-        window.addEventListener('refreshUrlList', this.refreshUrl);
+        $(window).bind('refreshUrlList',this.refreshUrl)
+        $(window).bind('refreshList',this.refreshUrl)
       },
       componentWillUnmount: function() {
-        window.removeEventListener('refreshUrlList', this.refreshUrl);
+        $(window).unbind('refreshUrlList',this.refreshUrl)
+        $(window).unbind('refreshList',this.refreshUrl)
       },
       render: function() {
         return (
