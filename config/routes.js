@@ -38,19 +38,17 @@ module.exports.routes = {
   'GET /dashboard': 'dashboard.index',
   'GET /login': {
     controller:'auth',
-    action: 'login',
-    locals: {
-      layout: 'public'
-    }
+    action: 'login'
+  },
+  '/lost-password': {
+    controller:'auth',
+    action: 'lostPassword'
   },
   'POST /login': 'auth.doLogin',
   'GET /logout': 'auth.logout',
   'GET /doLogin': {
     controller:'auth',
-    action: 'login',
-    locals: {
-      layout: 'public'
-    }
+    action: 'login'
   },
   'POST /url':'url.saveForm',
   'POST /url/delete/:id':'url.delete',

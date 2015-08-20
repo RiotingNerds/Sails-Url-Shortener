@@ -46,7 +46,7 @@
             <label className="checkbox">
                 <input type="checkbox" value="remember-me" /> Remember me
                 <span className="pull-right">
-                    <a data-toggle="modal" href="#myModal"> Forgot Password?</a>
+                    <a href="/lost-password"> Forgot Password?</a>
                 </span>
             </label>
             <button className="btn btn-lg btn-login btn-block" type="submit">Log in</button>
