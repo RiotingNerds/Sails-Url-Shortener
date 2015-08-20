@@ -6,7 +6,7 @@
  */
 var passport = require('passport'),
 		React = require('../helpers/React'),
-		response = require('../helpers/response')
+		response = require('../helpers/Response')
 module.exports = {
 	doLogin: function(req, res) {
     passport.authenticate('local', function(err, user, info) {
