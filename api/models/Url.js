@@ -6,7 +6,13 @@
 */
 
 module.exports = {
-
+  types: {
+    companyExists: function(companyID,err){
+      if(companyID > 0 && !err)
+        return true;
+      return false;
+    }
+  },
   attributes: {
     domainID : { type: 'integer' },
     redirectURL: {
@@ -44,6 +50,16 @@ module.exports = {
     linkableFullURL: function() {
       return "http://"+this.fullURL
     }
+  },
+  beforeValidate: function (values, cb) {
+    values.hash = this.makeDash(values.hash)
+    cb()
+  },
+  makeDash: function(input) {
+    return input
+      .replace(/^\s\s*/, '')     // Remove Preceding white space
+      .replace(/\s\s*$/, '')     // Remove Trailing white space
+      .replace(/([\s]+)/g, '-'); // Replace remaining white space with dashes
   },
   getUrlFromAccount: function(accountID,cb) {
     Url.find({where: {accountID:accountID,active:true}, sort: 'totalRequested DESC'})
