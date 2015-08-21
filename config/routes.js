@@ -44,6 +44,10 @@ module.exports.routes = {
     controller:'auth',
     action: 'lostPassword'
   },
+  '/reset-password/:code': {
+    controller:'auth',
+    action: 'resetPassword'
+  },
   'POST /login': 'auth.doLogin',
   'GET /logout': 'auth.logout',
   'GET /doLogin': {
