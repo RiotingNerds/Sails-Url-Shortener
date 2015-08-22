@@ -6,7 +6,9 @@
  */
 var passport = require('passport'),
 		React = require('../helpers/React'),
-		response = require('../helpers/Response')
+		response = require('../helpers/Response'),
+		nodemailer = require('nodemailer')
+
 module.exports = {
 	doLogin: function(req, res) {
     passport.authenticate('local', function(err, user, info) {
@@ -23,6 +25,44 @@ module.exports = {
       });
     })(req, res);
   },
+	resetPassword: function(req,res) {
+		res.locals.layout = 'layouts/public'
+		var code = req.param('code',null)
+		if(code) {
+			var resetPasswordParams = {code:code}
+			var resetPasswordContent = React.renderToString('auth/resetPassword.jsx',resetPasswordParams)
+			if(req.method == 'POST') {
+				var params = req.param('ChangePassword')
+				if(params.password && params.repassword && params.code) {
+
+				}
+			}
+
+			return res.view('auth/resetPassword',{resetPasswordContent:resetPasswordContent})
+		} else {
+
+		}
+	},
+	register: function(req,res) {
+
+	},
+	lostPassword: function(req,res) {
+		res.locals.layout = 'layouts/public'
+		var lostPasswordContent = React.renderToString('auth/lostPassword.jsx',{})
+		if(req.method == 'POST') {
+			var params = req.param('LostPassword')
+			if(params.email) {
+				User.findOne({email:params.email}, function(err,result) {
+					if(!err && result) {
+						User.sendResetCode(result)
+					}
+				})
+
+			}
+		}
+
+		return res.view('auth/lostPassword',{lostPasswordContent:lostPasswordContent})
+	},
 	login: function(req, res) {
 		res.locals.layout = 'layouts/public'
   	var loginForm = React.renderToString('auth/login.jsx',{})

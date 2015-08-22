@@ -4,13 +4,17 @@
 * @description :: TODO: You might write a short summary of how this model works and what it represents here.
 * @docs        :: http://sailsjs.org/#!documentation/models
 */
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt'),
+    crypto = require('crypto'),
+    moment = require('moment')
 
 module.exports = {
   attributes: {
     username : { type: 'string' },
     password : { type: 'string' },
     email: {type: 'string'},
+    resetCode: {type: 'string'},
+    resetExpire: {type: 'datetime'},
     updatedAt: {
       type:'datetime',
       columnName: 'lastModifiedDate'
@@ -43,6 +47,40 @@ module.exports = {
         return cb("Invalid user");
       }
 
+    })
+  },
+  makeRandomResetCode: function (howMany, chars) {
+      chars = chars || "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+      var rnd = crypto.randomBytes(howMany),
+          value = new Array(howMany),
+          len = chars.length;
+
+      for (var i = 0; i < howMany; i++) {
+          value[i] = chars[rnd[i] % len]
+      };
+
+      return value.join('');
+  },
+  sendResetCode: function(userResult,cb) {
+    var updateParams = {
+      resetCode:User.makeRandomResetCode(12),
+      resetExpire: moment().add(3, 'days').format('YYYY-MM-DD H:m:s')
+    }
+    User.update({id:userResult.id},updateParams, function(err,result) {
+      if(err && typeof cb == 'function')
+        return cb(err)
+      sails.hooks.email.send(
+        'lostPassword',
+        {name:userResult.username,code:User.makeRandomResetCode(12)},
+        {
+          to: userResult.email,
+          subject: 'Heard you lost your password'
+        },
+        function(err, info) {
+          if(typeof cb == 'function') {
+            cb(err,info)
+          }
+        })
     })
   },
   beforeCreate: function(user, cb) {
