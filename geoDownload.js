@@ -107,6 +107,8 @@
             function(err, results) {
               if (err)
                console.log(err);
+             sails.lower()
+             process.exit(1)
             });
           });
 
