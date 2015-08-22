@@ -103,7 +103,7 @@
             sails.models.geoname.query("load data local infile '"+tempFolder+"ip.csv' into table geoip fields"
                 +" terminated by ',' enclosed by '\"'"
                 +" lines terminated by '\n'"
-                +" (id,networkIP,geoNameID,highRange,lowRange,geoCountryNameID,postalCode,latitude,longitude,updatedOn);",
+                +" (networkIP,geoNameID,highRange,lowRange,geoCountryNameID,postalCode,latitude,longitude,updatedOn);",
             function(err, results) {
               if (err)
                console.log(err);
