@@ -93,12 +93,12 @@
           console.log(err);
           innerAsync.waterfall([
             function(cb) {
-              sails.models.geoname.query("TRUNCATE geoname", function(err result) {
+              sails.models.geoname.query("TRUNCATE geoname", function(err,result) {
                 cb(err)
               })
             },
             function(cb) {
-              sails.models.geoname.query("TRUNCATE geoip", function(err result) {
+              sails.models.geoname.query("TRUNCATE geoip", function(err,result) {
                 cb(err)
               })
             },
