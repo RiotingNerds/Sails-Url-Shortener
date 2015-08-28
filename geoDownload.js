@@ -112,7 +112,7 @@
                   console.log(err);
                 }
                 cb(err)
-              )
+              })
             },
             function(cb) {
               sails.models.geoname.query("load data local infile '"+tempFolder+"ip.csv' into table geoip fields"
