@@ -56,11 +56,15 @@ module.exports = {
         '<=':ipLong
       }
     })
-
     .exec(function(err,result) {
       if(!err && result) {
-        console.log(result)
+
         result.getCountry(function(err,country) {
+          if(err) {
+            if(typeof cb == 'function') {
+              cb(err)
+            }
+          }
           var params = {
             continent: country.continent,
             continentName: country.continentName,
@@ -74,8 +78,10 @@ module.exports = {
             requestID: request.id
           }
           RequestLocation.create(params,function(err,result) {
+            if(err)
+              console.log(err)
             if(typeof cb == 'function') {
-              cb()
+              cb(err,result)
             }
           })
         })
