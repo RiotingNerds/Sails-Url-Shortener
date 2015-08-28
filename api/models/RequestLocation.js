@@ -59,6 +59,7 @@ module.exports = {
     .populate('country')
     .exec(function(err,result) {
       if(!err && result) {
+        console.log(result)
         var params = {
           continent: result.country.continent,
           continentName: result.country.continentName,

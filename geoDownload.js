@@ -7,6 +7,7 @@
       fs = require('fs'),
       rimraf = require('rimraf'),
       async = require('async'),
+      innerAsync = require('async'),
       callDataSet = [],
       csv = require('fast-csv'),
       csvLocation = require('fast-csv'),
@@ -69,7 +70,6 @@
                  row++
                  console.log(row)
                  return {
-                   id:data.geoname_id || 0,
                    continent: data.continent_code,
                    geoNameID:data.geoname_id || 0,
                    continentName:data.continent_name,
@@ -91,27 +91,44 @@
         Sails.load({log:{level:'debug'}}, function(err, sails) {
           // Do some stuff with sails here
           console.log(err);
-
-          sails.models.geoname.query("load data local infile '"+tempFolder+"geoname.csv' into table geoname fields"
-              +" terminated by ',' enclosed by '\"'"
-              +" lines terminated by '\n'"
-              +" (continent,geoNameID,continentName,ISOCode,countryName,cityName,subdivision,updatedOn);",
-          function(err, results) {
-            if (err) {
-              console.log(err);
+          innerAsync.waterfall([
+            function(cb) {
+              sails.models.geoname.query("TRUNCATE geoname", function(err result) {
+                cb(err)
+              })
+            },
+            function(cb) {
+              sails.models.geoname.query("TRUNCATE geoip", function(err result) {
+                cb(err)
+              })
+            },
+            function(cb) {
+              sails.models.geoname.query("load data local infile '"+tempFolder+"geoname.csv' into table geoname fields"
+                  +" terminated by ',' enclosed by '\"'"
+                  +" lines terminated by '\n'"
+                  +" (continent,geoNameID,continentName,ISOCode,countryName,cityName,subdivision,updatedOn);",
+              function(err, results) {
+                if (err) {
+                  console.log(err);
+                }
+                cb(err)
+              )
+            },
+            function(cb) {
+              sails.models.geoname.query("load data local infile '"+tempFolder+"ip.csv' into table geoip fields"
+                  +" terminated by ',' enclosed by '\"'"
+                  +" lines terminated by '\n'"
+                  +" (networkIP,geoNameID,highRange,lowRange,geoCountryNameID,postalCode,latitude,longitude,updatedOn);",
+              function(err, results) {
+                if (err)
+                 console.log(err);
+                cb(err)
+              });
             }
-            sails.models.geoname.query("load data local infile '"+tempFolder+"ip.csv' into table geoip fields"
-                +" terminated by ',' enclosed by '\"'"
-                +" lines terminated by '\n'"
-                +" (networkIP,geoNameID,highRange,lowRange,geoCountryNameID,postalCode,latitude,longitude,updatedOn);",
-            function(err, results) {
-              if (err)
-               console.log(err);
-             sails.lower()
-             process.exit(1)
-            });
-          });
-
+          ], function(err,result) {
+            sails.lower()
+            process.exit(1)
+          })
         });
       })
     })
