@@ -14,9 +14,8 @@
             console.log(err);
           }
           results.forEach(function(result) {
-            console.log(result)
             locationArray.push(function(cb) {
-
+              console.log(result)
               sails.models.requestlocation.addRecord(result,cb)
             })
           })

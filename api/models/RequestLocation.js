@@ -65,6 +65,7 @@ module.exports = {
               cb(err)
             }
           }
+          console.log(country)
           var params = {
             continent: country.continent,
             continentName: country.continentName,
