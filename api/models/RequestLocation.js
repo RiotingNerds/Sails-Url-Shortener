@@ -46,7 +46,7 @@ module.exports = {
       type: 'float'
     },
   },
-  addRecord: function(request) {
+  addRecord: function(request,cb) {
     var ipLong = ip.toLong(request.ip)
     GeoIP.findOne({
       highRange: {
@@ -72,7 +72,9 @@ module.exports = {
           requestID: request.id
         }
         RequestLocation.create(params,function(err,result) {
-
+          if(typeof cb == 'function') {
+            cb()
+          }
         })
       }
     })

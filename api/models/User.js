@@ -13,8 +13,12 @@ module.exports = {
     username : { type: 'string' },
     password : { type: 'string' },
     email: {type: 'string'},
-    resetCode: {type: 'string'},
-    resetExpire: {type: 'datetime'},
+    code: {type: 'string'},
+    codeExpire: {type: 'datetime'},
+    active: {
+      type: 'boolean',
+      defaultsTo: 0
+    },
     updatedAt: {
       type:'datetime',
       columnName: 'lastModifiedDate'
@@ -23,6 +27,41 @@ module.exports = {
       type:'datetime',
       columnName: 'createDate'
     }
+  },
+  createNewAccount: function(user,cb) {
+    User.create({
+      email:user.email,
+      username: user.username,
+      password: user.password,
+      code:User.makeRandomResetCode(12),
+      codeExpire: moment().add(3, 'days').format('YYYY-MM-DD H:m:s')
+    }).then(function(result) {
+      var userProfile = UserProfile.create({
+        userID: result.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        country: user.country
+      })
+
+      sails.hooks.email.send(
+        'register',
+        {user:result},
+        {
+          to: result.email,
+          subject: 'Your new account information'
+        },
+        function(err, info) {
+
+        })
+
+      return [result,userProfile]
+    }).spread(function(result,userProfile) {
+      if(typeof cb === 'function')
+        cb(null,result,userProfile)
+    }).catch(function(e) {
+      if(typeof cb === 'function')
+        cb(e)
+    })
   },
   findUser: function(username,password,cb) {
     if(username=="admin" && password == "admin") {
@@ -63,15 +102,15 @@ module.exports = {
   },
   sendResetCode: function(userResult,cb) {
     var updateParams = {
-      resetCode:User.makeRandomResetCode(12),
-      resetExpire: moment().add(3, 'days').format('YYYY-MM-DD H:m:s')
+      code:User.makeRandomResetCode(12),
+      codeExpire: moment().add(3, 'days').format('YYYY-MM-DD H:m:s')
     }
     User.update({id:userResult.id},updateParams, function(err,result) {
       if(err && typeof cb == 'function')
         return cb(err)
       sails.hooks.email.send(
         'lostPassword',
-        {name:userResult.username,code:User.makeRandomResetCode(12)},
+        {name:userResult.username,code:result.code},
         {
           to: userResult.email,
           subject: 'Heard you lost your password'

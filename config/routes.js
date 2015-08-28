@@ -40,6 +40,7 @@ module.exports.routes = {
     controller:'auth',
     action: 'login'
   },
+  'GET /activate-user/:code':'auth.activateUser',
   '/lost-password': {
     controller:'auth',
     action: 'lostPassword'
@@ -48,6 +49,11 @@ module.exports.routes = {
     controller:'auth',
     action: 'resetPassword'
   },
+  'GET /register': {
+    controller:'auth',
+    action: 'register'
+  },
+  'POST /register': 'auth.doRegister',
   'POST /login': 'auth.doLogin',
   'GET /logout': 'auth.logout',
   'GET /doLogin': {

@@ -1,15 +1,10 @@
 module.exports.init = function() {
-
-
-
-
   return function(req, res, next) {
     var response = function(statusCode,result,params) {
-  		res.status(statusCode)
   		if(typeof params == 'undefined') {
   			params = {}
   		}
-  		return res.json(_.extend({result:result,code:statusCode},params))
+  		return res.json(statusCode,_.extend({result:result,code:statusCode},params))
   	}
   	var addMessage = function(msg,params) {
   		if(typeof params == 'undefined') {

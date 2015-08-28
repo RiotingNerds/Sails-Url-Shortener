@@ -9,8 +9,6 @@ var React = require('../helpers/React')
 
 module.exports = {
 	index:function(req,res) {
-		res.locals.layout = 'layouts/public'
-  	var loginForm = React.renderToString('auth/login.jsx',{})
-		return res.view('auth/login',{loginFormContent:loginForm})
+		return res.redirect('/login')
 	}
 };

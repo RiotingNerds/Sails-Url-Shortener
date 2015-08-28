@@ -1,6 +1,7 @@
 (function(){
   'use strict'
-  var React = require('react')
+  var React = require('react'),
+      _ = require('underscore')
 
   var App = React.createClass({
       getInitialState: function() {
@@ -29,6 +30,9 @@
       componentDidMount: function() {
         $(window).bind('refreshUrlList',this.refreshUrl)
         $(window).bind('refreshList',this.refreshUrl)
+        if(!_.isEmpty(this.props.notify)) {
+          $.notify(this.props.notify)
+        }
       },
       componentWillUnmount: function() {
         $(window).unbind('refreshUrlList',this.refreshUrl)
@@ -50,7 +54,14 @@
                 </span>
             </label>
             <button className="btn btn-lg btn-login btn-block" type="submit">Log in</button>
+              <div className="registration">
+                  Don't have an account yet?
+                  <a className="" href="/register">
+                      Create an account
+                  </a>
+              </div>
         </div>
+
       </form>
         );
       }

@@ -7,7 +7,9 @@
 var passport = require('passport'),
 		React = require('../helpers/React'),
 		response = require('../helpers/Response'),
-		nodemailer = require('nodemailer')
+		nodemailer = require('nodemailer'),
+		moment = require('moment'),
+		_ = require('lodash')
 
 module.exports = {
 	doLogin: function(req, res) {
@@ -25,6 +27,30 @@ module.exports = {
       });
     })(req, res);
   },
+	activateUser: function(req,res) {
+		var code = req.param('code','')
+		if(code) {
+			User
+				.findOne({active:false,code:code,codeExpire:{'>=':moment().format('YYYY-MM-DD H:m:s')}})
+				.then(function(result) {
+					if(_.isEmpty(result))
+						throw new Error('Account not found');
+					var updateUser = User.update({id:result.id},{code:null,codeExpire:null,active:true})
+					return [result,updateUser]
+				}).spread(function(find,update) {
+					req.session.notify = {message:'Account activated.',title: 'Success'}
+					return res.redirect('/')
+				})
+				.catch(function(err) {
+					console.log(err)
+					req.session.notify =  {message:'Code not found',title: 'Error'}
+					return res.redirect('/')
+				})
+		} else {
+			req.session.notify =  {message:'Code not found',title: 'Error'}
+			return res.redirect('/')
+		}
+	},
 	resetPassword: function(req,res) {
 		res.locals.layout = 'layouts/public'
 		var code = req.param('code',null)
@@ -43,8 +69,21 @@ module.exports = {
 
 		}
 	},
+	doRegister: function(req,res) {
+		var user = req.param('User')
+		User.createNewAccount(user, function(err,userResult,userProfileResult) {
+			if(!err) {
+				return res.success('Registered')
+			} else {
+				return res.makeError('error',err);
+			}
+		})
+	},
 	register: function(req,res) {
-
+		res.locals.layout = 'layouts/public'
+		var User = {}
+		var registerContent = React.renderToString('auth/register.jsx',{user:User})
+		return res.view('auth/register',{registerContent:registerContent,user:User})
 	},
 	lostPassword: function(req,res) {
 		res.locals.layout = 'layouts/public'
@@ -66,7 +105,11 @@ module.exports = {
 	login: function(req, res) {
 		res.locals.layout = 'layouts/public'
   	var loginForm = React.renderToString('auth/login.jsx',{})
-		return res.view('auth/login',{loginFormContent:loginForm})
+		var notify = {}
+		if(!_.isEmpty(req.session.notify)) {
+			notify = req.session.notify
+		}
+		return res.view('auth/login',{loginFormContent:loginForm,notify:notify})
   },
   logout: function(req, res) {
 		req.logOut();
