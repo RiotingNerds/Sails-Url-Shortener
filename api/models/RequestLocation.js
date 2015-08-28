@@ -56,27 +56,30 @@ module.exports = {
         '<=':ipLong
       }
     })
-    .populate('country')
+
     .exec(function(err,result) {
       if(!err && result) {
         console.log(result)
-        var params = {
-          continent: result.country.continent,
-          continentName: result.country.continentName,
-          ISOCode: result.country.ISOCode,
-          countryName: result.country.countryName,
-          cityName: result.country.cityName,
-          subdivision: result.country.subdivision,
-          postalCode: result.postalCode,
-          latitude: result.latitude,
-          longitude: result.longitude,
-          requestID: request.id
-        }
-        RequestLocation.create(params,function(err,result) {
-          if(typeof cb == 'function') {
-            cb()
+        result.getCountry(function(err,country) {
+          var params = {
+            continent: country.continent,
+            continentName: country.continentName,
+            ISOCode: country.ISOCode,
+            countryName: country.countryName,
+            cityName: country.cityName,
+            subdivision: country.subdivision,
+            postalCode: result.postalCode,
+            latitude: result.latitude,
+            longitude: result.longitude,
+            requestID: request.id
           }
+          RequestLocation.create(params,function(err,result) {
+            if(typeof cb == 'function') {
+              cb()
+            }
+          })
         })
+
       }
     })
   }

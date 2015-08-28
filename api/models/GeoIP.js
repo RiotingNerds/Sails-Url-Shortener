@@ -31,16 +31,19 @@ module.exports = {
     updatedOn: {
       type: 'datetime'
     },
-    country: {
+    geoNameID: {
       type: 'integer',
-      defaultsTo: 1,
-      model: 'geoname',
-      columnName: 'geoCountryNameID'
+
     },
     postalCode: {
       type: 'string',
       size: 15,
       defaultsTo: 0
+    },
+    getCountry: function(cb) {
+      GeoName.findOne({geoCountryNameID:this.geoNameID}, function(err,result) {
+        cb(err,result)
+      })
     }
   }
 };
