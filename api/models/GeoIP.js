@@ -6,12 +6,13 @@
 */
 
 module.exports = {
+  tableName: 'geoip',
   attributes: {
     networkIP: {
       type: 'string',
       size: 15
     },
-    geoName: {
+    geoNameID: {
       type: 'integer',
       model: 'GeoName',
       columnName: 'geoNameID'
@@ -31,19 +32,10 @@ module.exports = {
     updatedOn: {
       type: 'datetime'
     },
-    geoNameID: {
-      type: 'integer',
-
-    },
     postalCode: {
       type: 'string',
       size: 15,
       defaultsTo: 0
-    },
-    getCountry: function(cb) {
-      GeoName.findOne({geoCountryNameID:this.geoNameID}, function(err,result) {
-        cb(err,result)
-      })
     }
   }
 };

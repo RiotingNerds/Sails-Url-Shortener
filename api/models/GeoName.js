@@ -6,6 +6,7 @@
 */
 
 module.exports = {
+  tableName: 'geoname',
   attributes: {
     continent: {
       type: 'string',

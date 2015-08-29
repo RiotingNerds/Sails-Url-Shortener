@@ -29,6 +29,9 @@ module.exports = {
     },
     platform: {
       type:"string"
+    },
+    requestedDate: {
+      type:'datetime'
     }
   },
   addRequest: function(req,urlModel) {
@@ -57,7 +60,6 @@ module.exports = {
     Request.create(params).exec(function(err,result) {
       Request.count({URLID:urlModel.id},function(err,count) {
         Url.update({id:urlModel.id},{totalRequested:count,lastRequested:new Date()},function(err,URLResult){
-
         })
         RequestLocation.addRecord(result)
       })

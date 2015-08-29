@@ -5,7 +5,8 @@
 * @docs        :: http://sailsjs.org/#!documentation/models
 */
 
-var ip = require('ip')
+var ip = require('ip'),
+    moment = require('moment')
 
 module.exports = {
   attributes: {
@@ -55,38 +56,49 @@ module.exports = {
       lowRange: {
         '<=':ipLong
       }
-    })
-    .exec(function(err,result) {
-      if(!err && result) {
+    }).then(function(result) {
+      var returnName = null
 
-        result.getCountry(function(err,country) {
-          if(err) {
-            if(typeof cb == 'function') {
-              cb(err)
-            }
-          }
-          console.log(country)
-          var params = {
-            continent: country.continent,
-            continentName: country.continentName,
-            ISOCode: country.ISOCode,
-            countryName: country.countryName,
-            cityName: country.cityName,
-            subdivision: country.subdivision,
-            postalCode: result.postalCode,
-            latitude: result.latitude,
-            longitude: result.longitude,
-            requestID: request.id
-          }
-          RequestLocation.create(params,function(err,result) {
-            if(err)
-              console.log(err)
-            if(typeof cb == 'function') {
-              cb(err,result)
-            }
-          })
+      if(result) {
+        returnName = GeoName.findOne({geoNameID:result.geoNameID})
+      }
+      return [result,returnName,request]
+    }).spread(function(ipResult,nameResult,requestResult) {
+
+      if(!nameResult || !ipResult) {
+        console.log('add')
+        Request.update({id:requestResult.id},{requestedDate:moment().format('YYYY-MM-DD HH:mm:ss')}).exec(function(err,result) {
+          return cb(null)
         })
+      } else {
+        var params = {
+          continent: nameResult.continent,
+          continentName: nameResult.continentName,
+          ISOCode: nameResult.ISOCode,
+          countryName: nameResult.countryName,
+          cityName: nameResult.cityName,
+          subdivision: nameResult.subdivision,
+          postalCode: ipResult.postalCode,
+          latitude: ipResult.latitude,
+          longitude: ipResult.longitude,
+          requestID: requestResult.id
+        }
+        console.log(params)
+        RequestLocation.create(params,function(err,result) {
+          if(err) {
+            Request.update({id:requestResult.id},{requestedDate:moment().format('YYYY-MM-DD HH:mm:ss')}).exec(function(err,result) {
 
+            })
+          }
+          if(typeof cb === 'function') {
+            cb(err,result)
+          }
+        })
+      }
+    })
+    .catch(function(err) {
+      if(typeof cb === 'function') {
+        cb(err)
       }
     })
   }
