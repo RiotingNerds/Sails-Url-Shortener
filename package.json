@@ -60,10 +60,14 @@
   "license": "",
   "devDependencies": {
     "adm-zip": "^0.4.7",
+    "barrels": "^1.5.0",
     "fast-csv": "^0.6.0",
     "fs-extra": "^0.23.1",
     "grunt-browserify": "^4.0.0",
     "grunt-react": "^0.12.2",
-    "jquery.scrollto": "^2.1.1"
+    "jquery.scrollto": "^2.1.1",
+    "sails-memory": "^0.10.5",
+    "should": "^7.1.0",
+    "supertest": "^1.1.0"
   }
 }

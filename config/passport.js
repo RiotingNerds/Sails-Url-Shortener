@@ -20,8 +20,9 @@ passport.use(new LocalStrategy({
   },
   function(username, password, done) {
     User.findUser(username,password,function(err,user) {
-      if(err)
+      if(err){
         return done(err)
+      }
       if (!user) {
         return done(null, false, { message: 'Incorrect username.' });
       }

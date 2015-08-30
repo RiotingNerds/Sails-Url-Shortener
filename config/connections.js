@@ -31,6 +31,10 @@ module.exports.connections = {
   localDiskDb: {
     adapter: 'sails-disk'
   },
+  testingDB: {
+    adapter: 'sails-memory',
+    module: 'sails-memory'
+  },
 
   /***************************************************************************
   *                                                                          *

@@ -6,15 +6,45 @@
 */
 var bcrypt = require('bcrypt'),
     crypto = require('crypto'),
-    moment = require('moment')
+    moment = require('moment'),
+    validator = require('validator')
 
 module.exports = {
+  types: {
+    existInDB: function(username,count){
+      if(count>0)
+        return false;
+      return true;
+    }
+  },
   attributes: {
-    username : { type: 'string' },
-    password : { type: 'string' },
-    email: {type: 'string'},
-    code: {type: 'string'},
-    codeExpire: {type: 'datetime'},
+    username : {
+      type: 'string',
+      required: true,
+      existInDB: function(cb) {
+        User.count({username:this.username}).exec(function(err,result) {
+          return cb(result)
+        })
+      }
+    },
+    password : {
+      type: 'string'
+    },
+    email: {
+      type: 'email',
+      required: true,
+      existInDB: function(cb) {
+        User.count({email:this.email}).exec(function(err,count) {
+          return cb(count)
+        })
+      }
+    },
+    code: {
+      type: 'string'
+    },
+    codeExpire: {
+      type: 'datetime'
+    },
     active: {
       type: 'boolean',
       defaultsTo: 0
@@ -64,13 +94,18 @@ module.exports = {
     })
   },
   findUser: function(username,password,cb) {
-    if(username=="admin" && password == "admin") {
-      return cb(null,{
-        id: 0,
-        username:'admin'
-      })
+    var searchFilter = {
+      active:true,
+      username:username
     }
-    User.findOne({username:username}, function(err,result) {
+    if(validator.isEmail(username)) {
+      searchFilter = {
+        active:true,
+        email:username
+      }
+    }
+
+    User.findOne(searchFilter, function(err,result) {
       if(result && !err) { // To remove or change default login when production
         bcrypt.compare(password, result.password, function (err, res) {
           if (!res)
@@ -124,12 +159,14 @@ module.exports = {
   },
   beforeCreate: function(user, cb) {
     bcrypt.genSalt(10, function(err, salt) {
+      console.log(user.password)
       bcrypt.hash(user.password, salt, function(err, hash) {
         if (err) {
             console.log(err);
             cb(err);
         } else {
             user.password = hash;
+            console.log(user.password)
             cb();
         }
       });

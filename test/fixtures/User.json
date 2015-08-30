@@ -1,0 +1,25 @@
+[
+  {
+    "id":1,
+    "username":"monkeymon",
+    "email":"monkeymon@gmail.com",
+    "password":"$2a$10$4BS/4FuRMoOjhgQJsar4BuhF.sXmc2sNXM0g0cMgm5TdjaIARrSqa",
+    "active":true
+  },
+  {
+    "id":2,
+    "username":"monkeymon4",
+    "email":"monkeymon4@gmail.com",
+    "password":"$2a$10$4BS/4FuRMoOjhgQJsar4BuhF.sXmc2sNXM0g0cMgm5TdjaIARrSqa",
+    "active":false
+  },
+  {
+    "id":3,
+    "username":"tobeActivate",
+    "email":"tobeActivate@gmail.com",
+    "password":"$2a$10$4BS/4FuRMoOjhgQJsar4BuhF.sXmc2sNXM0g0cMgm5TdjaIARrSqa",
+    "active":true,
+    "code":"1ryz9XZoA3XX",
+    "codeExpire":"2015-09-02 03:50:14"
+  }
+]

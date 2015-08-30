@@ -15,9 +15,7 @@ module.exports = {
 	doLogin: function(req, res) {
     passport.authenticate('local', function(err, user, info) {
       if ((err) || (!user)) {
-        return res.success(info.message,{
-          data: user
-        });
+        return res.makeError("Unable to find user");
       }
 
       req.logIn(user, function(err) {
