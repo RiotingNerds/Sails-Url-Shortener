@@ -52,7 +52,7 @@
       },
       refreshUrl: function() {
         var self = this
-        $.getJSON('/url/topList',function(data){
+        $.getJSON('/url/top-list',function(data){
           self.setState({data:data.data})
         })
       },

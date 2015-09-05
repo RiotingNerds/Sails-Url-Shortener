@@ -7,11 +7,18 @@
 var bcrypt = require('bcrypt'),
     crypto = require('crypto'),
     moment = require('moment'),
-    validator = require('validator')
+    validator = require('validator'),
+    _ = require('lodash'),
+    validatorMsg = require('sails-validation-messages')
 
 module.exports = {
   types: {
     existInDB: function(username,count){
+      if(count>0)
+        return false;
+      return true;
+    },
+    existInAccount: function(username,count) {
       if(count>0)
         return false;
       return true;
@@ -21,17 +28,27 @@ module.exports = {
     username : {
       type: 'string',
       required: true,
+      maxLength: 50,
       existInDB: function(cb) {
         User.count({username:this.username}).exec(function(err,result) {
+          return cb(result)
+        })
+      },
+      existInAccount: function(cb) {
+        Account.count({name:this.username}).exec(function(err,result) {
           return cb(result)
         })
       }
     },
     password : {
-      type: 'string'
+      required:true,
+      type: 'string',
+      minLength: 8,
+      maxLength: 15
     },
     email: {
       type: 'email',
+      maxLength: 255,
       required: true,
       existInDB: function(cb) {
         User.count({email:this.email}).exec(function(err,count) {
@@ -56,41 +73,89 @@ module.exports = {
     createdAt: {
       type:'datetime',
       columnName: 'createDate'
+    },
+    profile: {
+      collection: 'userProfile',
+      via: 'userID'
+    },
+    getDefaultAccount: function() {
+      return Account.findOne({name:this.username})
+    }
+  },
+  validationMessages: { //hand for i18n & l10n
+    email: {
+      existInDB: 'Email already exist',
+      required: 'Email cannot be empty',
+      email: 'Email is invalid',
+      maxLength: 'Email cannot be more than 255 char'
+    },
+    password: {
+      required: 'Password cannot be empty',
+      minLength: 'Password must be at least 8 letter long',
+      maxLength: 'Password cannot be more than 25 char'
+    },
+    username: {
+      existInDB: 'Username already exist',
+      required: 'Username cannot be empty',
+      maxLength: "Username cannot be more than 50 char",
+      existInAccount: "Username already registered"
     }
   },
   createNewAccount: function(user,cb) {
-    User.create({
-      email:user.email,
-      username: user.username,
-      password: user.password,
-      code:User.makeRandomResetCode(12),
-      codeExpire: moment().add(3, 'days').format('YYYY-MM-DD H:m:s')
-    }).then(function(result) {
-      var userProfile = UserProfile.create({
-        userID: result.id,
+    var creatingUser = function() {
+      User.create({
+        email:user.email || "",
+        username: user.username || "",
+        password: user.password || "",
+        code:User.makeRandomResetCode(12),
+        codeExpire: moment().add(3, 'days').format('YYYY-MM-DD H:m:s')
+      }).then(function(result) {
+        var userProfile = UserProfile.create({
+          userID: result.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          country: user.country
+        })
+        sails.hooks.email.send(
+          'register',
+          {user:result},
+          {
+            to: result.email,
+            subject: 'Your new account information'
+          },
+          function(err, info) {
+
+          })
+
+        return [result,userProfile]
+      }).spread(function(result,userProfile) {
+        Account.createDefaultUserAccount(result)
+        if(typeof cb === 'function')
+          cb(null,result,userProfile)
+      }).catch(function(e) {
+        if(typeof cb === 'function')
+          cb(e)
+      })
+    }
+    User.validate({
+      email:user.email || "",
+      username: user.username || "",
+      password: user.password || ""
+    }, function(userErr) {
+      UserProfile.validate({
         firstName: user.firstName,
         lastName: user.lastName,
         country: user.country
+      }, function(userProfileErr) {
+        if(userErr || userProfileErr) {
+          var userErrorAttribute = userErr?userErr.invalidAttributes || {}: {}
+          var userProfileErrorAttribute = userProfileErr?userProfileErr.invalidAttributes || {}:{}
+          var error = _.extend({},validatorMsg(User,userErrorAttribute),validatorMsg(UserProfile,userProfileErrorAttribute))
+          cb({Errors:error})
+        } else {
+          creatingUser()
+        }
       })
-
-      sails.hooks.email.send(
-        'register',
-        {user:result},
-        {
-          to: result.email,
-          subject: 'Your new account information'
-        },
-        function(err, info) {
-
-        })
-
-      return [result,userProfile]
-    }).spread(function(result,userProfile) {
-      if(typeof cb === 'function')
-        cb(null,result,userProfile)
-    }).catch(function(e) {
-      if(typeof cb === 'function')
-        cb(e)
     })
   },
   findUser: function(username,password,cb) {
@@ -104,24 +169,37 @@ module.exports = {
         email:username
       }
     }
-
-    User.findOne(searchFilter, function(err,result) {
-      if(result && !err) { // To remove or change default login when production
-        bcrypt.compare(password, result.password, function (err, res) {
-          if (!res)
-            return cb("Invalid user");
-          if(!result) {
-            result = {
-              username: "admin"
-            }
-          }
-          return cb(null, result);
-        });
-      } else {
-        return cb("Invalid user");
-      }
-
-    })
+    User.findOne(searchFilter)
+      .then(function(result) {
+        if(result) { // To remove or change default login when production
+          bcrypt.compare(password, result.password, function (err, res) {
+            if (!res)
+              return cb("Invalid user");
+            UserProfile.findOne({userID:result.id})
+              .then(function(userProfile) {
+                var accountModel = result.getDefaultAccount()
+                return [result,userProfile,accountModel]
+              })
+              .spread(function(user,userProfile,accountModel) {
+                return cb(null, {
+                  id:result.id,
+                  username: result.username,
+                  fullName: userProfile.fullName(),
+                  profile : userProfile,
+                  account: accountModel
+                });
+              })
+              .catch(function(err) {
+                return cb("Invalid user")
+              })
+          });
+        } else {
+          return cb("Invalid user");
+        }
+      })
+      .catch(function(err) {
+        cb("Invalid user");
+      })
   },
   makeRandomResetCode: function (howMany, chars) {
       chars = chars || "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
@@ -159,14 +237,12 @@ module.exports = {
   },
   beforeCreate: function(user, cb) {
     bcrypt.genSalt(10, function(err, salt) {
-      console.log(user.password)
       bcrypt.hash(user.password, salt, function(err, hash) {
         if (err) {
             console.log(err);
             cb(err);
         } else {
             user.password = hash;
-            console.log(user.password)
             cb();
         }
       });

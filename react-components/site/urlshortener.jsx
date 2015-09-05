@@ -48,7 +48,7 @@
       },
       checkServer: function(value) {
         var app = this;
-        $.getJSON('/Url/checkHash',{hash:value}, function(data,statusCode){
+        $.getJSON('/Url/check-hash',{hash:value}, function(data,statusCode){
           if(data.code != 200) {
             app.state.hashCharCount += 1
             checkServer(randomString(app.state.hashCharCount))
@@ -60,7 +60,8 @@
         })
       },
       handleHashChange: function(event) {
-        this.setState({hashChanged:true})
+        this.setState({hashChanged:true,hash: event.target.value})
+
         this.checkServer(event.target.value)
       },
       randomString: function(event) {
@@ -74,9 +75,7 @@
           self.setState({
             shortURL:data.message.fullURL
           })
-          var updateEvent = new CustomEvent("refreshUrlList")
-          window.dispatchEvent(updateEvent)
-          //$(window).trigger('refreshUrlList')
+          $(window).trigger('refreshUrlList')
         })
         return false;
       },

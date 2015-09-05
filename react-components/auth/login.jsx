@@ -20,9 +20,8 @@
         var self = this
         var url = $(e.target).attr('action')
         $.post(url,$(e.target).serialize(),function(data) {
-          //window.location="/dashboard"
-
-          location.reload();
+          window.location="/"
+          //location.reload();
         })
 
         return false;
@@ -40,7 +39,7 @@
       },
       render: function() {
         return (
-          <form className="form-signin" onSubmit={this.login} method="POST" action="/auth/doLogin">
+          <form className="form-signin" onSubmit={this.login} method="POST" action="/login">
         <h2 className="form-signin-heading">sign in now</h2>
         <div className="login-wrap">
             <div className="user-login-info">

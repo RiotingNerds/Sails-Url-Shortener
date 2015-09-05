@@ -8,7 +8,7 @@
  * For more information on configuration, check out:
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.http.html
  */
-
+var passport = require('passport');
 module.exports.http = {
 
   /****************************************************************************
@@ -22,8 +22,9 @@ module.exports.http = {
   ****************************************************************************/
 
   middleware: {
-    passportInit    : require('passport').initialize(),
-    passportSession : require('passport').session(),
+    passportInit    : passport.initialize(),
+    passportSession : passport.session(),
+    passportRememberMe: passport.authenticate('remember-me'),
     userAgent       : require('express-useragent').express(),
     clearDomainPort     : function(req,res,next) {
       var hostName = ( req.headers.host.match(/:/g) ) ? req.headers.host.slice( 0, req.headers.host.indexOf(":") ) : req.headers.host
@@ -46,6 +47,7 @@ module.exports.http = {
     'clearDomainPort',
     'passportInit',
     'passportSession',
+    'passportRememberMe',
     'myRequestLogger',
     'bodyParser',
     'handleBodyParserError',

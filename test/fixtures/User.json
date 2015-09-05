@@ -3,23 +3,50 @@
     "id":1,
     "username":"monkeymon",
     "email":"monkeymon@gmail.com",
-    "password":"$2a$10$4BS/4FuRMoOjhgQJsar4BuhF.sXmc2sNXM0g0cMgm5TdjaIARrSqa",
+    "password":"shohoku10",
     "active":true
   },
   {
     "id":2,
     "username":"monkeymon4",
     "email":"monkeymon4@gmail.com",
-    "password":"$2a$10$4BS/4FuRMoOjhgQJsar4BuhF.sXmc2sNXM0g0cMgm5TdjaIARrSqa",
+    "password":"shohoku10",
     "active":false
   },
   {
     "id":3,
     "username":"tobeActivate",
     "email":"tobeActivate@gmail.com",
-    "password":"$2a$10$4BS/4FuRMoOjhgQJsar4BuhF.sXmc2sNXM0g0cMgm5TdjaIARrSqa",
-    "active":true,
+    "password":"shohoku10",
+    "active":false,
     "code":"1ryz9XZoA3XX",
     "codeExpire":"2015-09-02 03:50:14"
+  },
+  {
+    "id":5,
+    "username":"tobeActivate2",
+    "email":"tobeActivate2@gmail.com",
+    "password":"shohoku10",
+    "active":false,
+    "code":"1ryz9XZoA3XX22",
+    "codeExpire":"2014-09-02 03:50:14"
+  },
+  {
+    "id":4,
+    "username":"tobeActivate1",
+    "email":"tobeActivate1@gmail.com",
+    "password":"shohoku10",
+    "active":true,
+    "code":"12cqdqwd8402",
+    "codeExpire":"2015-09-02 03:50:14"
+  },
+  {
+    "id":6,
+    "username":"renewuser",
+    "email":"renewuser@gmail.com",
+    "password":"shohoku10",
+    "active":false,
+    "code":"1ryz9XZoA3XX22",
+    "codeExpire":"2014-09-02 03:50:14"
   }
 ]

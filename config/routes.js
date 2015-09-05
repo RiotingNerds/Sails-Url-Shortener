@@ -35,6 +35,7 @@ module.exports.routes = {
   '/': 'site.index',
   'GET /domain': 'domain.index',
   'POST /domain': 'domain.saveForm',
+  'GET /domain/list':'domain.list',
   'GET /dashboard': 'dashboard.index',
   'GET /login': {
     controller:'auth',
@@ -56,12 +57,12 @@ module.exports.routes = {
   'POST /register': 'auth.doRegister',
   'POST /login': 'auth.doLogin',
   'GET /logout': 'auth.logout',
-  'GET /doLogin': {
-    controller:'auth',
-    action: 'login'
-  },
   'POST /url':'url.saveForm',
+  'POST /url/create':'url.saveForm',
+  'GET /url/check-hash':'url.checkHash',
+  'GET /url/top-list':'url.topList',
   'POST /url/delete/:id':'url.delete',
+
 
   /***************************************************************************
   *                                                                          *

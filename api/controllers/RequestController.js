@@ -24,7 +24,7 @@ module.exports = {
 						}
 					})
 				} else {
-					return res.redirect(301, '/');
+					return res.redirect(302, '/');
 				}
 			}
 			else {

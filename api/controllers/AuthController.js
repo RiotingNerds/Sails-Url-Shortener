@@ -15,9 +15,9 @@ module.exports = {
 	doLogin: function(req, res) {
     passport.authenticate('local', function(err, user, info) {
       if ((err) || (!user)) {
-        return res.makeError("Unable to find user");
+        return res.notFound("Unable to find user");
       }
-
+			console.log('before login')
       req.logIn(user, function(err) {
         if (err)
 					res.send(err);
@@ -40,7 +40,6 @@ module.exports = {
 					return res.redirect('/')
 				})
 				.catch(function(err) {
-					console.log(err)
 					req.session.notify =  {message:'Code not found',title: 'Error'}
 					return res.redirect('/')
 				})
@@ -73,7 +72,8 @@ module.exports = {
 			if(!err) {
 				return res.success('Registered')
 			} else {
-				return res.makeError('error',err);
+
+				return res.validationError('error',{errorAttributes:err.Errors});
 			}
 		})
 	},

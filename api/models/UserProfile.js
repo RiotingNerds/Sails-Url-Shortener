@@ -12,20 +12,24 @@ module.exports = {
     userID : {
       type: 'integer'
     },
-
     country : {
       type: 'string',
-      size: 125
+      maxLength: 125
     },
 
     firstName : {
+      required: true,
       type: 'string',
-      size: 50
+      maxLength: 50
     },
 
     lastName : {
+      required:true,
       type: 'string',
-      size: 50
+      maxLength: 50
+    },
+    fullName: function() {
+      return this.firstName+ ' '+this.lastName
     },
 
     createBy : { type: 'integer' },
@@ -38,5 +42,18 @@ module.exports = {
       type:'datetime',
       columnName: 'createDate'
     }
-  }
+  },
+  validationMessages: { //hand for i18n & l10n
+    firstName: {
+      required: 'First Name cannot be empty',
+      maxLength: 'First Name cannot be more than 50 char'
+    },
+    lastName: {
+      required: 'Last Name cannot be empty',
+      maxLength: 'Last Name cannot be more than 50 char'
+    },
+    country: {
+      maxLength: 'Country cannot be more than 125 char'
+    }
+  },
 };

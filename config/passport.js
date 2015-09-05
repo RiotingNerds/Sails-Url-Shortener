@@ -1,17 +1,14 @@
 var passport = require('passport'),
 LocalStrategy = require('passport-local').Strategy,
+RememberMeStrategy = require('passport-remember-me').Strategy
 bcrypt = require('bcrypt');
 
 passport.serializeUser(function(user, done) {
-    done(null, user);
+  done(null, user);
 });
 
 passport.deserializeUser(function(user, done) {
-  if(user.id == 0 && user.username == 'admin')
-    return done(null,user);
-    User.findOne({ id: id } , function (err, user) {
-        done(err, user);
-    });
+  done(null,user)
 });
 
 passport.use(new LocalStrategy({
@@ -28,5 +25,16 @@ passport.use(new LocalStrategy({
       }
       return done(null,user,{message: 'Logged in'})
     })
+  }
+));
+
+passport.use(new RememberMeStrategy(
+  function (token, cb) {
+    User.consumeSessionToken(token, function (err, user) {
+      cb(err, user);
+    });
+  },
+  function( token,cb) {
+
   }
 ));

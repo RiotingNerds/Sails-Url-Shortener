@@ -9,7 +9,8 @@ module.exports = {
 
   attributes: {
     accountID: {
-      type: 'integer'
+      type: 'integer',
+      defaultsTo:0
     },
     domain: {
       type: 'string',

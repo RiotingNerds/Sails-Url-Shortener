@@ -22,6 +22,10 @@ module.exports.init = function() {
   		params = addMessage(message,params)
   		return response(500,'failed',params)
   	}
+    res.notFound = function(message,params) {
+      params = addMessage(message,params)
+  		return response(404,'failed',params)
+    }
   	res.validationError = function(message,params) {
   		params = addMessage(message,params)
   		return response(400,'failed',params)

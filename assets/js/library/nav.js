@@ -1,5 +1,6 @@
 (function ($) {
     "use strict";
+
     $(document).ready(function () {
         /*==Left Navigation Accordion ==*/
         if ($.fn.dcAccordion) {
@@ -134,7 +135,7 @@
         }
 
 
-
+/*
         if ($.fn.plot) {
             var datatPie = [30, 50];
             // DONUT
@@ -171,7 +172,7 @@
             });
         }
 
-
+*/
 
         /*==Collapsible==*/
         $('.widget-head').click(function (e) {
@@ -214,7 +215,7 @@
                 cursorborderradius: "0px",
                 cursorwidth: "3px"
             });
-            
+
             $('#sidebar').toggleClass('hide-left-bar');
             if ($('#sidebar').hasClass('hide-left-bar')) {
                 $(".leftside-navigation").getNiceScroll().hide();
@@ -233,6 +234,7 @@
                 $('.header').removeClass('merge-header')
             }
         });
+
         $('.toggle-right-box .fa-bars').click(function (e) {
             $('#container').toggleClass('open-right-panel');
             $('.right-sidebar').toggleClass('open-right-bar');

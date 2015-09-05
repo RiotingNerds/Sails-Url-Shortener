@@ -27,6 +27,7 @@ module.exports = {
 		Domain.findOne({id:params.domainID}).exec(function(err,result) {
 			if(result) {
 				params.fullURL = result.domain+'/'+params.hash
+				params.accountID = req.user.account? req.user.account.id:-1
 				Url.create(params).exec(function(err,result) {
 					return response.success(res,result)
 				})
@@ -42,7 +43,7 @@ module.exports = {
 		})
 	},
 	topList: function(req,res) {
-		Url.getUrlFromAccount(0, function(err,urlResults) {
+		Url.getUrlFromAccount(req.user.account?req.user.account.id:-1, function(err,urlResults) {
 			return response.success(res,'item found',{data:urlResults})
 		})
 	},
